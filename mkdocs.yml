@@ -1,0 +1,8 @@
+site_name: opti_fit
+
+theme:
+  name: "material"
+
+plugins:
+  - search
+  - mkdocstrings
