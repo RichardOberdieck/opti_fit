@@ -1,4 +1,7 @@
 site_name: opti_fit
+site_url: https://RichardOberdieck.github.io/opti_fit/
+repo_url: https://github.com/RichardOberdieck/opti_fit
+repo_name: opti_fit
 
 theme:
   name: "readthedocs"

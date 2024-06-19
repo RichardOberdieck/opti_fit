@@ -1,4 +1,4 @@
-name: Python package
+name: Automatic checks
 
 on: [push]
 
