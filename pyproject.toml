@@ -49,9 +49,11 @@ test = [
 ]
 docs = [
   "mkdocs", 
-  "mkdocstrings", 
-  "mkdocs-material"
+  "mkdocstrings"
 ]
+
+[tool.hatch.envs.default]
+installer = "uv"
 
 [tool.hatch.envs.test]
 dependencies = ["opti_fit[test]"]
@@ -84,3 +86,4 @@ dependencies = ["opti_fit[docs]"]
 [tool.hatch.envs.docs.scripts]
 build = "mkdocs build --clean"
 serve = "mkdocs serve --dev-addr localhost:8000"
+deploy = "mkdocs gh-deploy"

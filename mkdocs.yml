@@ -1,8 +1,7 @@
 site_name: opti_fit
 
 theme:
-  name: "material"
+  name: "readthedocs"
 
 plugins:
   - search
-  - mkdocstrings
