@@ -49,7 +49,7 @@ test = [
 ]
 docs = [
   "mkdocs", 
-  "mkdocstrings[python]", 
+  "mkdocstrings", 
   "mkdocs-material"
 ]
 
