@@ -1,0 +1,89 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "opti_fit"
+description = 'Project about finding the optimal cutoffs for string matching'
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Richard Oberdieck", email = "rico@bankingcircle.com"},
+  { name = "Ruben Menke", email = "rum@bankingcircle.com" },
+  { name = "Christian Vad Karsten", email = "chk@bankingcircle.com"}
+]
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "pandas>2",
+  "mip"
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/RichardOberdieck/opti_fit/blob/main/README.md"
+Issues = "https://github.com/RichardOberdieck/opti_fit/issues"
+Source = "https://github.com/RichardOberdieck/opti_fit"
+
+[tool.hatch.version]
+path = "opti_fit/__init__.py"
+
+[tool.hatch.build]
+include = [       
+   "opti_fit/*.py",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-cov",
+  "pre-commit",
+]
+docs = [
+  "mkdocs", 
+  "mkdocstrings"
+]
+
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.hatch.envs.test]
+dependencies = ["opti_fit[test]"]
+
+[tool.hatch.envs.test.scripts]
+base = "pytest {args}"
+code_check = "pre-commit run --all-files"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "opti_fit/__init__.py",
+  "tests/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+fail_under = 90
+
+[tool.hatch.envs.docs]
+dependencies = ["opti_fit[docs]"]
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build --clean"
+serve = "mkdocs serve --dev-addr localhost:8000"
+deploy = "mkdocs gh-deploy"

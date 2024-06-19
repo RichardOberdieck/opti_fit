@@ -1,0 +1,21 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-ast
+  - id: check-json
+  - id: check-toml
+  - id: check-yaml
+    args: [--allow-multiple-documents]
+  - id: check-merge-conflict
+    args: [--assume-in-merge]
+  - id: debug-statements
+  - id: end-of-file-fixer
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.4.8
+  hooks:
+    # Run the linter.
+    - id: ruff
+    # Run the formatter.
+    - id: ruff-format
