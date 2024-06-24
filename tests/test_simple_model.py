@@ -6,7 +6,7 @@ from opti_fit.simple_model import solve_simple_model_using_mip
 
 def test_solve_simple_model_using_mip():
     # Arrange
-    columns = ["payment_id", "is_payment_true_hit", "is_hit_true_hit"] + ALGORITHMS
+    columns = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"] + ALGORITHMS
     data = [
         (1, True, True, 100, 100, 100, 100, 100, 100),
         (1, True, False, 60, 70, 80, 75, 85, 90),
