@@ -22,13 +22,13 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
     """
 
     algorithm_combinations = combinations(ALGORITHMS, 2)
-    weighting = np.linspace(0, 1, 5)
+    weighting = np.linspace(0, 0.5, 3)
     cutoff_results = {}
     hit_count = {}
     filename = None
 
     for algorithms in algorithm_combinations:
-        string_rep = str(algorithms[0]) + "," + str(algorithms[1])
+        string_rep = algorithms[0].value + "," + algorithms[1].value
         new_df = df.copy(deep=True)
         for weight in weighting:
             new_df[string_rep] = new_df.apply(
