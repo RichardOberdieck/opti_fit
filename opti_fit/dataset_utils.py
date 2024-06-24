@@ -52,6 +52,18 @@ def _validate_dataset(df: pd.DataFrame) -> None:
     }.union(ALGORITHMS)
 
     # Validation 2 - all scores are between 0 and 100
-    # breakpoint()
     assert df[ALGORITHMS].min(axis=None) >= 0
     assert df[ALGORITHMS].max(axis=None) <= 100
+
+    # Validation 3 - if payment is a hit, it has to have at least one true hit. If it is not, all hits have to be false positives
+    payment_df = df[["payment_case_id", "is_payment_true_hit"]]
+    payment_df = payment_df.drop_duplicates()
+    series_grouped = df.groupby("payment_case_id", group_keys=True)[
+        "is_hit_true_hit"
+    ].apply(lambda x: x)
+    verify = payment_df.apply(
+        lambda row: series_grouped[row["payment_case_id"]].any()
+        == row["is_payment_true_hit"],
+        axis=1,
+    )
+    assert verify.all()
