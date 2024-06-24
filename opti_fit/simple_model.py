@@ -4,7 +4,9 @@ from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS
 
 
-def solve_simple_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None):
+def solve_simple_model_using_mip(
+    df: pd.DataFrame, mps_filename: str | None = None
+) -> tuple[dict, dict]:
     n_names = len(df)
 
     model = Model(solver_name=CBC)
@@ -42,9 +44,9 @@ def solve_simple_model_using_mip(df: pd.DataFrame, mps_filename: str | None = No
     model.objective = minimize(xsum(objective))
     if mps_filename is not None:
         model.write(mps_filename)
-    model.optimize(max_seconds=600)
+    model.optimize(max_seconds=60)
 
     cut_offs = {a: v.x for a, v in x.items()}
-    expected_hits = {name: v.x > 0.5 for name, v in z.items()}
+    expected_hits = {i: v.x > 0.5 for i, v in z.items()}
 
     return cut_offs, expected_hits

@@ -1,5 +1,19 @@
 import pandas as pd
+from enum import Enum
+
 from opti_fit.dataset_utils import ALGORITHMS
+from opti_fit.simple_model import solve_simple_model_using_mip
+
+
+class Model(str, Enum):
+    SIMPLE_HIT_MIP = "simple_hit_mip"
+
+    def run(self, *data) -> tuple[dict, dict]:
+        match self.value:
+            case "simple_hit_mip":
+                return solve_simple_model_using_mip(*data)
+            case _:
+                raise ValueError("Undefined model")
 
 
 def validate_hit_solution(df: pd.DataFrame, cutoffs: dict, expected_hits: dict):
