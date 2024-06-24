@@ -24,7 +24,8 @@ classifiers = [
 ]
 dependencies = [
   "pandas>2",
-  "mip"
+  "mip",
+  "click"
 ]
 dynamic = ["version"]
 
@@ -54,6 +55,9 @@ docs = [
 
 [tool.hatch.envs.default]
 installer = "uv"
+
+[tool.hatch.envs.default.scripts]
+solve = "python -m opti_fit.main {args}"
 
 [tool.hatch.envs.test]
 dependencies = ["opti_fit[test]"]
