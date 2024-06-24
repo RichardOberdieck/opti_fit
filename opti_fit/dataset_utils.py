@@ -39,6 +39,7 @@ data_types = {
 
 def read_dataset(filename: str) -> pd.DataFrame:
     df = pd.read_csv(filename, compression="gzip", dtype=data_types)
+    df.index.rename("hit_id", inplace=True)
     _validate_dataset(df)
     return df
 

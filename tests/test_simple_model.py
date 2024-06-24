@@ -1,12 +1,20 @@
 import pandas as pd
+from pytest import fixture
 
 from opti_fit.dataset_utils import ALGORITHMS
-from opti_fit.model_utils import validate_hit_solution
-from opti_fit.simple_model import solve_simple_model_using_mip
+from opti_fit.model_utils import (
+    validate_cutoffs,
+    validate_hit_solution,
+    validate_payment_solution,
+)
+from opti_fit.simple_model import (
+    solve_simple_model_using_mip,
+    solve_simple_payment_model_using_mip,
+)
 
 
-def test_solve_simple_model_using_mip():
-    # Arrange
+@fixture
+def simple_df():
     columns = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"] + ALGORITHMS
     data = [
         (1, True, True, 100, 100, 100, 100, 100, 100),
@@ -19,9 +27,23 @@ def test_solve_simple_model_using_mip():
         (4, True, False, 92, 90, 93, 95, 89, 88),
     ]
     df = pd.DataFrame(data=data, columns=columns)
+    df.index.rename("hit_id", inplace=True)
+    return df
 
+
+def test_solve_simple_model_using_mip(simple_df):
     # Act
-    cutoffs, expected_hits = solve_simple_model_using_mip(df)
+    cutoffs, expected_hits = solve_simple_model_using_mip(simple_df)
 
     # Assert expected hits and cutoffs are working as advertised
-    validate_hit_solution(df, cutoffs, expected_hits)
+    validate_cutoffs(simple_df, cutoffs, expected_hits)
+    validate_hit_solution(simple_df, cutoffs)
+
+
+def test_solve_simple_payment_model_using_mip(simple_df):
+    # Act
+    cutoffs, expected_hits = solve_simple_payment_model_using_mip(simple_df)
+
+    # Assert expected payment and cutoffs are working as advertised
+    validate_cutoffs(simple_df, cutoffs, expected_hits)
+    validate_payment_solution(simple_df, cutoffs)

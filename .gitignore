@@ -143,3 +143,5 @@ migrations/
 # mps files
 *.mps.gz
 *.mps
+*.lp
+*.lp.gz
