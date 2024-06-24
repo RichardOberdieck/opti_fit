@@ -13,6 +13,7 @@ class Algorithm(str, Enum):
 
 
 ALGORITHMS = [a for a in set(Algorithm)]  # Want a list of easy pandas code
+OTHER = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"]
 
 CUTOFF_THRESHOLDS = {
     Algorithm.REGEX_MATCH: 90,
@@ -46,11 +47,7 @@ def read_dataset(filename: str) -> pd.DataFrame:
 
 def _validate_dataset(df: pd.DataFrame) -> None:
     # Validation 1 - column names
-    assert set(df.columns) == {
-        "payment_case_id",
-        "is_payment_true_hit",
-        "is_hit_true_hit",
-    }.union(ALGORITHMS)
+    assert set(df.columns) == set(OTHER).union(ALGORITHMS)
 
     # Validation 2 - all scores are between 0 and 100
     assert df[ALGORITHMS].min(axis=None) >= 0
@@ -59,12 +56,9 @@ def _validate_dataset(df: pd.DataFrame) -> None:
     # Validation 3 - if payment is a hit, it has to have at least one true hit. If it is not, all hits have to be false positives
     payment_df = df[["payment_case_id", "is_payment_true_hit"]]
     payment_df = payment_df.drop_duplicates()
-    series_grouped = df.groupby("payment_case_id", group_keys=True)[
-        "is_hit_true_hit"
-    ].apply(lambda x: x)
+    series_grouped = df.groupby("payment_case_id", group_keys=True)["is_hit_true_hit"].apply(lambda x: x)
     verify = payment_df.apply(
-        lambda row: series_grouped[row["payment_case_id"]].any()
-        == row["is_payment_true_hit"],
+        lambda row: series_grouped[row["payment_case_id"]].any() == row["is_payment_true_hit"],
         axis=1,
     )
     assert verify.all()
