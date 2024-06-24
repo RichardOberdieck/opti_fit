@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from enum import Enum
 
 
@@ -23,8 +24,21 @@ CUTOFF_THRESHOLDS = {
 }
 
 
+data_types = {
+    "payment_case_id": np.int64,
+    "is_payment_true_hit": np.bool,
+    "is_hit_true_hit": np.bool,
+    "regex_match": np.float64,
+    "jaro_winkler": np.float64,
+    "fuzz_ratio": np.float64,
+    "fuzz_partial_ratio": np.float64,
+    "fuzz_token_sort_ratio": np.float64,
+    "fuzz_partial_token_sort_ratio": np.float64,
+}
+
+
 def read_dataset(filename: str) -> pd.DataFrame:
-    df = pd.read_csv(filename, compression="gzip")
+    df = pd.read_csv(filename, compression="gzip", dtype=data_types)
     _validate_dataset(df)
     return df
 
@@ -32,7 +46,7 @@ def read_dataset(filename: str) -> pd.DataFrame:
 def _validate_dataset(df: pd.DataFrame) -> None:
     # Validation 1 - column names
     assert set(df.columns) == {
-        "payment_id",
+        "payment_case_id",
         "is_payment_true_hit",
         "is_hit_true_hit",
     }.union(ALGORITHMS)
@@ -41,6 +55,15 @@ def _validate_dataset(df: pd.DataFrame) -> None:
     assert df[ALGORITHMS].min(axis=None) >= 0
     assert df[ALGORITHMS].max(axis=None) <= 100
 
-
-def remove_payment_hits_without_true_hits(df: pd.DataFrame) -> pd.DataFrame:
-    pass
+    # Validation 3 - if payment is a hit, it has to have at least one true hit. If it is not, all hits have to be false positives
+    payment_df = df[["payment_case_id", "is_payment_true_hit"]]
+    payment_df = payment_df.drop_duplicates()
+    series_grouped = df.groupby("payment_case_id", group_keys=True)[
+        "is_hit_true_hit"
+    ].apply(lambda x: x)
+    verify = payment_df.apply(
+        lambda row: series_grouped[row["payment_case_id"]].any()
+        == row["is_payment_true_hit"],
+        axis=1,
+    )
+    assert verify.all()

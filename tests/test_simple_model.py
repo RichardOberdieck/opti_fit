@@ -1,12 +1,13 @@
 import pandas as pd
 
 from opti_fit.dataset_utils import ALGORITHMS
+from opti_fit.model_utils import validate_hit_solution
 from opti_fit.simple_model import solve_simple_model_using_mip
 
 
 def test_solve_simple_model_using_mip():
     # Arrange
-    columns = ["payment_id", "is_payment_true_hit", "is_hit_true_hit"] + ALGORITHMS
+    columns = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"] + ALGORITHMS
     data = [
         (1, True, True, 100, 100, 100, 100, 100, 100),
         (1, True, False, 60, 70, 80, 75, 85, 90),
@@ -23,14 +24,4 @@ def test_solve_simple_model_using_mip():
     cutoffs, expected_hits = solve_simple_model_using_mip(df)
 
     # Assert expected hits and cutoffs are working as advertised
-    hits = [dict(zip(ALGORITHMS, d[3:])) for d in data]
-    indices_of_true_hits = [count for count, hit in enumerate(data) if hit[2] is True]
-    for count, hit in enumerate(hits):
-        is_still_hit = any([hit[a] >= cutoffs[a] for a in ALGORITHMS])
-        if expected_hits[count] is True:
-            assert is_still_hit
-        else:
-            assert not is_still_hit
-
-        if count in indices_of_true_hits:
-            assert is_still_hit
+    validate_hit_solution(df, cutoffs, expected_hits)
