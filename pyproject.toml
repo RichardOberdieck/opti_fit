@@ -25,7 +25,9 @@ classifiers = [
 dependencies = [
   "pandas>2",
   "mip",
-  "click"
+  "click",
+  "gurobipy>=11.0",
+  "xlsxwriter"
 ]
 dynamic = ["version"]
 

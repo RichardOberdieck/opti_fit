@@ -1,12 +1,12 @@
 import pandas as pd
-from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize
+from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize, GUROBI
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
 def solve_simple_model_using_mip(
     df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
-) -> tuple[dict, dict]:
+) -> dict[str, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
 
@@ -15,12 +15,12 @@ def solve_simple_model_using_mip(
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
 
     Returns:
-        tuple[dict, dict]: Cutoffs and expected hits
+        dict[str, float]: The optimal cutoffs
     """
     n_names = len(df)
     algorithms = [col for col in df.columns if col not in OTHER]
 
-    model = Model(solver_name=CBC)
+    model = Model(solver_name=GUROBI)
 
     # Add the variables
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in algorithms}
@@ -52,15 +52,14 @@ def solve_simple_model_using_mip(
     model.objective = minimize(xsum(objective))
     if mps_filename is not None:
         model.write(mps_filename)
-    model.optimize(max_seconds=60)
+    model.optimize()
 
     cut_offs = {a: v.x for a, v in x.items()}
-    expected_hits = {i: v.x > 0.5 for i, v in z.items()}
 
-    return cut_offs, expected_hits
+    return cut_offs
 
 
-def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None) -> tuple[dict, dict]:
+def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None) -> dict[str, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -69,7 +68,7 @@ def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | N
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
 
     Returns:
-        tuple[dict, dict]: Cutoffs and expected hits
+        dict[str, float]: The optimal cutoffs
     """
     payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit", "is_hit_true_hit"]].apply(
         lambda row: row
@@ -118,9 +117,8 @@ def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | N
     model.objective = minimize(xsum(objective))
     if mps_filename is not None:
         model.write(mps_filename)
-    model.optimize(max_seconds=60)
+    model.optimize()
 
     cut_offs = {a: v.x for a, v in x.items()}
-    expected_hits = {i[1]: v.x > 0.5 for i, v in z.items()}
 
-    return cut_offs, expected_hits
+    return cut_offs
