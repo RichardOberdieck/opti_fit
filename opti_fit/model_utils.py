@@ -72,25 +72,26 @@ def analyze_performance(df: pd.DataFrame, cutoffs: dict[Model, float]) -> pd.Dat
     n_hits, true_positive_hits_removed = check_hit_solution(df, cutoffs)
     n_payment_hits, true_positive_payments_removed = check_payment_solution(df, cutoffs)
 
-    total_hits = df["is_hit_true_hit"].sum()
-    total_payment_hits = df["is_payment_true_hit"].sum()
+    total_true_hits = df["is_hit_true_hit"].sum()
+    total_true_payment_hits = df["is_payment_true_hit"].sum()
+    n_payments = len(df["payment_case_id"].unique())
 
     data = [
         (
             "Payment",
-            total_payment_hits,
-            total_payment_hits - n_payment_hits,
-            (total_payment_hits - n_payment_hits) / total_payment_hits,
+            n_payments,
+            n_payments - n_payment_hits,
+            100 * (n_payments - n_payment_hits) / n_payments,
             true_positive_payments_removed,
-            true_positive_payments_removed / total_payment_hits,
+            100 * true_positive_payments_removed / total_true_payment_hits,
         ),
         (
             "Hits",
-            total_hits,
-            total_hits - n_hits,
-            (total_hits - n_hits) / total_hits,
+            len(df),
+            len(df) - n_hits,
+            100 * (len(df) - n_hits) / len(df),
             true_positive_hits_removed,
-            true_positive_hits_removed / total_hits,
+            100 * true_positive_hits_removed / total_true_hits,
         ),
     ]
 

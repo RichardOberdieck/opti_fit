@@ -31,7 +31,7 @@ def run_model(model: str, full_dataset: bool, to_file: bool):
     print(cutoffs_df.to_markdown(tablefmt="psql", floatfmt=".2f"))
 
     if to_file:
-        filename = f"{model}_{full_dataset}.xlsx"
+        filename = f"{model.value}_{full_dataset}.xlsx"
         with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
             config_df.to_excel(writer, sheet_name="Configuration")
             performance_df.to_excel(writer, sheet_name="Performance")
