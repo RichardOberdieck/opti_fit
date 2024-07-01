@@ -4,18 +4,19 @@ from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize, GUROBI
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
-def solve_simple_model_using_mip(
+def solve_simple_hit_model(
     df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
-) -> dict[str, float]:
+) -> dict[Algorithm, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
+        thresholds (dict[Algorithm, float]): The lower bounds for the different algorithms
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     n_names = len(df)
     algorithms = [col for col in df.columns if col not in OTHER]
@@ -23,12 +24,12 @@ def solve_simple_model_using_mip(
     model = Model(solver_name=GUROBI)
 
     # Add the variables
-    x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in algorithms}
+    x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=thresholds[a], ub=100) for a in algorithms}
     y = {
         (a, n): model.add_var(f"y_{a},{n}", var_type=BINARY)
         for a in algorithms
         for n in range(n_names)
-        if df.loc[n, a] >= CUTOFF_THRESHOLDS[a]
+        if df.loc[n, a] >= thresholds[a]
     }
     z = {n: model.add_var(f"z_{n}", var_type=BINARY) for n in range(n_names)}
 
@@ -59,7 +60,7 @@ def solve_simple_model_using_mip(
     return cut_offs
 
 
-def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None) -> dict[str, float]:
+def solve_simple_payment_model(df: pd.DataFrame, mps_filename: str | None = None) -> dict[Algorithm, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -68,7 +69,7 @@ def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | N
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit", "is_hit_true_hit"]].apply(
         lambda row: row

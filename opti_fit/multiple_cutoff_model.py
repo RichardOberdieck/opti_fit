@@ -3,7 +3,7 @@ import pandas as pd
 from itertools import combinations
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS
-from opti_fit.simple_model import solve_simple_model_using_mip
+from opti_fit.simple_model import solve_simple_hit_model
 
 
 def solve_hit_model_with_multiple_cutoffs_using_mip(
@@ -40,7 +40,7 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
             thresholds[string_rep] = (
                 weight * CUTOFF_THRESHOLDS[algorithms[0]] + (1 - weight) * CUTOFF_THRESHOLDS[algorithms[1]]
             )
-            cutoffs, expected_hits = solve_simple_model_using_mip(df, filename, thresholds)
+            cutoffs, expected_hits = solve_simple_hit_model(df, filename, thresholds)
             cutoff_results[(string_rep, weight)] = cutoffs
             hit_count[(string_rep, weight)] = sum(expected_hits.values())
 

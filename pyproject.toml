@@ -53,7 +53,8 @@ test = [
 ]
 docs = [
   "mkdocs", 
-  "mkdocstrings"
+  "mkdocs-material",
+  "mkdocstrings[python]"
 ]
 
 [tool.hatch.envs.default]
