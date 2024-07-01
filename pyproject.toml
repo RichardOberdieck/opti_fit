@@ -25,7 +25,10 @@ classifiers = [
 dependencies = [
   "pandas>2",
   "mip",
-  "click"
+  "click",
+  "gurobipy>=11.0",
+  "tabulate",
+  "xlsxwriter"
 ]
 dynamic = ["version"]
 
@@ -50,7 +53,8 @@ test = [
 ]
 docs = [
   "mkdocs", 
-  "mkdocstrings"
+  "mkdocs-material",
+  "mkdocstrings[python]"
 ]
 
 [tool.hatch.envs.default]
@@ -91,3 +95,8 @@ dependencies = ["opti_fit[docs]"]
 build = "mkdocs build --clean"
 serve = "mkdocs serve --dev-addr localhost:8000"
 deploy = "mkdocs gh-deploy --force"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"

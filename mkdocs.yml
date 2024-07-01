@@ -4,7 +4,19 @@ repo_url: https://github.com/RichardOberdieck/opti_fit
 repo_name: opti_fit
 
 theme:
-  name: "readthedocs"
+  name: "material"
 
 plugins:
   - search
+  - mkdocstrings
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
