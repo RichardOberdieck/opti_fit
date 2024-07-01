@@ -76,7 +76,7 @@ def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | N
     payment_ids = payment_df.index.get_level_values("payment_case_id").unique()
     hit_ids = payment_df.index.get_level_values("hit_id").unique()
 
-    model = Model(solver_name=CBC)
+    model = Model(solver_name=GUROBI)
 
     # Add the variables
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in ALGORITHMS}

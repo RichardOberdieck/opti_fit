@@ -1,9 +1,11 @@
+from math import floor
 import os
 import pandas as pd
 import click
 
 from opti_fit.dataset_utils import read_dataset
-from opti_fit.model_utils import Model, analyze_performance
+from opti_fit.model_utils import analyze_performance
+from opti_fit.models import Model
 
 
 @click.command()
@@ -17,9 +19,10 @@ def run_model(model: str, full_dataset: bool, to_file: bool):
     df = read_dataset(os.path.join("data", filename))
 
     cutoffs = model.run(df)
+    breakpoint()
     config_df = pd.DataFrame.from_dict(
         {"model": model, "full_dataset": full_dataset}, orient="index", columns=["Value"]
-    )
+    )        
     performance_df = analyze_performance(df, cutoffs)
     cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
 
