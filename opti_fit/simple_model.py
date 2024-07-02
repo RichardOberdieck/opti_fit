@@ -5,7 +5,7 @@ from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorit
 
 
 def solve_simple_model_using_mip(
-    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
+    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS, solver_name: str = "CBC"
 ) -> dict[str, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
@@ -20,15 +20,15 @@ def solve_simple_model_using_mip(
     n_names = len(df)
     algorithms = [col for col in df.columns if col not in OTHER]
 
-    model = Model(solver_name=GUROBI)
+    model = Model(solver_name=solver_name)
 
     # Add the variables
-    x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in algorithms}
+    x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=thresholds[a], ub=100) for a in algorithms}
     y = {
         (a, n): model.add_var(f"y_{a},{n}", var_type=BINARY)
         for a in algorithms
         for n in range(n_names)
-        if df.loc[n, a] >= CUTOFF_THRESHOLDS[a]
+        if df.loc[n, a] >= thresholds[a]
     }
     z = {n: model.add_var(f"z_{n}", var_type=BINARY) for n in range(n_names)}
 
@@ -55,11 +55,11 @@ def solve_simple_model_using_mip(
     model.optimize()
 
     cut_offs = {a: v.x for a, v in x.items()}
-
+    
     return cut_offs
 
 
-def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None) -> dict[str, float]:
+def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC") -> dict[str, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -76,7 +76,7 @@ def solve_simple_payment_model_using_mip(df: pd.DataFrame, mps_filename: str | N
     payment_ids = payment_df.index.get_level_values("payment_case_id").unique()
     hit_ids = payment_df.index.get_level_values("hit_id").unique()
 
-    model = Model(solver_name=GUROBI)
+    model = Model(solver_name=solver_name)
 
     # Add the variables
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in ALGORITHMS}

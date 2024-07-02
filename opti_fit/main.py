@@ -12,14 +12,16 @@ from opti_fit.models import Model
 @click.option("--model", default="simple_hit_mip", help="The model to solve")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
-def run_model(model: str, full_dataset: bool, to_file: bool):
+@click.option("--solver_name", default=True, help="Name of solver to use")
+def run_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
     model = Model(model)
+    if solver_name not in ["GUROBI", "GRB", "CBC", "HIGHS"]:
+        raise ValueError(f"Invalid solver name, got {solver_name}")
 
     filename = "full_dataset.csv.gz" if full_dataset else "small_dataset.csv.gz"
     df = read_dataset(os.path.join("data", filename))
 
-    cutoffs = model.run(df)
-    breakpoint()
+    cutoffs = model.run(df, solver_name=solver_name)
     config_df = pd.DataFrame.from_dict(
         {"model": model, "full_dataset": full_dataset}, orient="index", columns=["Value"]
     )        
