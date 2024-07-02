@@ -38,10 +38,11 @@ data_types = {
 }
 
 
-def read_dataset(filename: str) -> pd.DataFrame:
+def read_dataset(filename: str, validate: bool = True) -> pd.DataFrame:
     df = pd.read_csv(filename, compression="gzip", dtype=data_types)
     df.index.rename("hit_id", inplace=True)
-    _validate_dataset(df)
+    if validate:
+        _validate_dataset(df)
     df = round_scores(df)
     return df
 
