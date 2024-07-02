@@ -28,7 +28,8 @@ dependencies = [
   "click",
   "gurobipy>=11.0",
   "tabulate",
-  "xlsxwriter"
+  "xlsxwriter",
+  "tqdm"
 ]
 dynamic = ["version"]
 

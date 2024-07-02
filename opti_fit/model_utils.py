@@ -1,25 +1,6 @@
 import pandas as pd
-from enum import Enum
 
 from opti_fit.dataset_utils import ALGORITHMS
-from opti_fit.simple_model import (
-    solve_simple_hit_model,
-    solve_simple_payment_model,
-)
-
-
-class Model(str, Enum):
-    SIMPLE_HIT_MIP = "simple_hit_mip"
-    SIMPLE_PAYMENT_MIP = "simple_payment_mip"
-
-    def run(self, *data) -> tuple[dict, dict]:
-        match self.value:
-            case "simple_hit_mip":
-                return solve_simple_hit_model(*data)
-            case "simple_payment_mip":
-                return solve_simple_payment_model(*data)
-            case _:
-                raise ValueError("Undefined model")
 
 
 def validate_cutoffs(df: pd.DataFrame, cutoffs: dict[int, float], expected_hits: dict[int, float]) -> None:
@@ -32,7 +13,7 @@ def validate_cutoffs(df: pd.DataFrame, cutoffs: dict[int, float], expected_hits:
             assert not is_still_hit
 
 
-def check_hit_solution(df: pd.DataFrame, cutoffs: dict[Model, float], validate: bool = False) -> tuple[int, int]:
+def check_hit_solution(df: pd.DataFrame, cutoffs, validate: bool = False) -> tuple[int, int]:
     n_hits = 0
     true_positives_removed = 0
     for _, row in df.iterrows():
@@ -47,7 +28,7 @@ def check_hit_solution(df: pd.DataFrame, cutoffs: dict[Model, float], validate: 
     return n_hits, true_positives_removed
 
 
-def check_payment_solution(df: pd.DataFrame, cutoffs: dict[Model, float], validate: bool = False) -> tuple[int, int]:
+def check_payment_solution(df: pd.DataFrame, cutoffs, validate: bool = False) -> tuple[int, int]:
     payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit"]].apply(lambda row: row)
     payment_ids = payment_df.index.get_level_values("payment_case_id").unique()
     n_payment_hits = 0
@@ -68,7 +49,7 @@ def check_payment_solution(df: pd.DataFrame, cutoffs: dict[Model, float], valida
     return n_payment_hits, true_positives_removed
 
 
-def analyze_performance(df: pd.DataFrame, cutoffs: dict[Model, float]) -> pd.DataFrame:
+def analyze_performance(df: pd.DataFrame, cutoffs) -> pd.DataFrame:
     n_hits, true_positive_hits_removed = check_hit_solution(df, cutoffs)
     n_payment_hits, true_positive_payments_removed = check_payment_solution(df, cutoffs)
 
@@ -80,6 +61,7 @@ def analyze_performance(df: pd.DataFrame, cutoffs: dict[Model, float]) -> pd.Dat
         (
             "Payment",
             n_payments,
+            total_true_payment_hits,
             n_payments - n_payment_hits,
             100 * (n_payments - n_payment_hits) / n_payments,
             true_positive_payments_removed,
@@ -88,6 +70,7 @@ def analyze_performance(df: pd.DataFrame, cutoffs: dict[Model, float]) -> pd.Dat
         (
             "Hits",
             len(df),
+            total_true_hits,
             len(df) - n_hits,
             100 * (len(df) - n_hits) / len(df),
             true_positive_hits_removed,
@@ -100,6 +83,7 @@ def analyze_performance(df: pd.DataFrame, cutoffs: dict[Model, float]) -> pd.Dat
         columns=[
             "Type",
             "Total",
+            "Total True Positive",
             "Removed False Positive [absolute]",
             "Removed False Positive [%]",
             "Removed True Positive [absolute]",

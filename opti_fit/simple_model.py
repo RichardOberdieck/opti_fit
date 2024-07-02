@@ -1,11 +1,14 @@
 import pandas as pd
-from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize, GUROBI
+from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
 def solve_simple_hit_model(
-    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
+    df: pd.DataFrame,
+    mps_filename: str | None = None,
+    thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS,
+    solver_name: str = "CBC",
 ) -> dict[Algorithm, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
@@ -21,7 +24,7 @@ def solve_simple_hit_model(
     n_names = len(df)
     algorithms = [col for col in df.columns if col not in OTHER]
 
-    model = Model(solver_name=GUROBI)
+    model = Model(solver_name=solver_name)
 
     # Add the variables
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=thresholds[a], ub=100) for a in algorithms}
@@ -60,7 +63,9 @@ def solve_simple_hit_model(
     return cut_offs
 
 
-def solve_simple_payment_model(df: pd.DataFrame, mps_filename: str | None = None) -> dict[Algorithm, float]:
+def solve_simple_payment_model(
+    df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC"
+) -> dict[Algorithm, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -77,7 +82,7 @@ def solve_simple_payment_model(df: pd.DataFrame, mps_filename: str | None = None
     payment_ids = payment_df.index.get_level_values("payment_case_id").unique()
     hit_ids = payment_df.index.get_level_values("hit_id").unique()
 
-    model = Model(solver_name=CBC)
+    model = Model(solver_name=solver_name)
 
     # Add the variables
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in ALGORITHMS}

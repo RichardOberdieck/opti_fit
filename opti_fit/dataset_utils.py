@@ -42,6 +42,7 @@ def read_dataset(filename: str) -> pd.DataFrame:
     df = pd.read_csv(filename, compression="gzip", dtype=data_types)
     df.index.rename("hit_id", inplace=True)
     _validate_dataset(df)
+    df = round_scores(df)
     return df
 
 
@@ -62,3 +63,9 @@ def _validate_dataset(df: pd.DataFrame) -> None:
         axis=1,
     )
     assert verify.all()
+
+
+def round_scores(df: pd.DataFrame) -> pd.DataFrame:
+    for algorithm in ALGORITHMS:
+        df[algorithm] = df[algorithm].apply(lambda row: round(row, 2))
+    return df
