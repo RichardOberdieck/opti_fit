@@ -4,11 +4,8 @@ from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 from opti_fit.dataset_utils import CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
-def solve_relaxed_hit_model_using_mip(
-    df: pd.DataFrame,
-    mps_filename: str | None = None,
-    thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS,
-    solver_name: str = "CBC",
+def solve_relaxed_hit_model(
+    df: pd.DataFrame, solver_name: str = "CBC", thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
 ) -> dict[str, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
@@ -57,8 +54,6 @@ def solve_relaxed_hit_model_using_mip(
 
     # Add objective
     model.objective = minimize(xsum(objective))
-    if mps_filename is not None:
-        model.write(mps_filename)
     model.optimize()
 
     cut_offs = {a: v.x for a, v in x.items()}

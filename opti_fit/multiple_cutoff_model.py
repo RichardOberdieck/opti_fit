@@ -8,9 +8,7 @@ from opti_fit.simple_model import solve_simple_hit_model
 from opti_fit.model_utils import analyze_performance
 
 
-def solve_hit_model_with_multiple_cutoffs_using_mip(
-    df: pd.DataFrame, mps_filename: str | None = None
-) -> tuple[dict, dict]:
+def solve_hit_model_with_multiple_cutoffs(df: pd.DataFrame, solver_name: str = "CBC") -> tuple[dict, dict]:
     """This model tests the assumption that it is possible to use the information from multiple
     algorithms to remove even more false positives. We essentially combine the weighted scores from 2 algorithms
     and run the simple hit model with this additional "algorithm score".
@@ -29,8 +27,8 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
     performance = {}
     best_performance = 0
     best_cutoff = {}
-    filename = None
-    # xlsx_filename = f"multiple_cutoffs_full_results_{len(df)}.xlsx"
+    xlsx_filename = f"multiple_cutoffs_full_results_{len(df)}.xlsx"
+    counter = 1
 
     for algorithms in tqdm(algorithm_combinations):
         string_rep = algorithms[0].value + "," + algorithms[1].value
@@ -41,23 +39,28 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
             new_df[string_rep] = new_df.apply(
                 lambda row: weight * row[algorithms[0]] + (1 - weight) * row[algorithms[1]], axis=1
             )
-            if mps_filename:
-                filename = mps_filename + "_" + string_rep + "_" + weight
             thresholds = CUTOFF_THRESHOLDS
             thresholds[string_rep] = (
                 weight * CUTOFF_THRESHOLDS[algorithms[0]] + (1 - weight) * CUTOFF_THRESHOLDS[algorithms[1]]
             )
-            cutoffs = solve_simple_hit_model(new_df, filename, thresholds)
+            cutoffs = solve_simple_hit_model(new_df, solver_name, thresholds)
             cutoff_results[(string_rep, weight)] = cutoffs
             performance[(string_rep, weight)] = analyze_performance(new_df, cutoffs)
-            # cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
+            cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
+            config_df = pd.DataFrame.from_dict(
+                {"Algorithm A": algorithms[0].value, "Algorithm B:": algorithms[1].value, "Weight": weight},
+                orient="index",
+                columns=["Value"],
+            )
 
-            # with pd.ExcelWriter(xlsx_filename, engine="xlsxwriter") as writer:
-            #    cutoffs_df.to_excel(writer, sheet_name=str_instance, startrow=0, startcol=0)
-            #    performance[(string_rep, weight)].to_excel(writer, sheet_name=str_instance, startrow=10, startcol=0)
+            with pd.ExcelWriter(xlsx_filename, engine="xlsxwriter") as writer:
+                config_df.to_excel(writer, sheet_name=str(counter), startrow=0, startcol=0)
+                cutoffs_df.to_excel(writer, sheet_name=str(counter), startrow=5, startcol=0)
+                performance[(string_rep, weight)].to_excel(writer, sheet_name=str(counter), startrow=15, startcol=0)
 
             if performance[(string_rep, weight)].loc["Hits", "Removed False Positive [absolute]"] > best_performance:
                 best_performance = performance[(string_rep, weight)].loc["Hits", "Removed False Positive [absolute]"]
                 best_cutoff = cutoffs
+            counter += 1
 
     return best_cutoff
