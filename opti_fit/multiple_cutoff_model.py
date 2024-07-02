@@ -4,7 +4,7 @@ from itertools import combinations
 from tqdm import tqdm
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS
-from opti_fit.simple_model import solve_simple_model_using_mip
+from opti_fit.simple_model import solve_simple_hit_model
 from opti_fit.model_utils import analyze_performance
 
 
@@ -47,8 +47,7 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
             thresholds[string_rep] = (
                 weight * CUTOFF_THRESHOLDS[algorithms[0]] + (1 - weight) * CUTOFF_THRESHOLDS[algorithms[1]]
             )
-            cutoffs = solve_simple_model_using_mip(new_df, filename, thresholds)
-
+            cutoffs, expected_hits = solve_simple_hit_model(df, filename, thresholds)
             cutoff_results[(string_rep, weight)] = cutoffs
             performance[(string_rep, weight)] = analyze_performance(new_df, cutoffs)
             # cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])

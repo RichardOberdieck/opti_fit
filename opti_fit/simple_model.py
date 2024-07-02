@@ -4,21 +4,20 @@ from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
-def solve_simple_model_using_mip(
-    df: pd.DataFrame,
-    mps_filename: str | None = None,
-    thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS,
-    solver_name: str = "CBC",
-) -> dict[str, float]:
+
+def solve_simple_hit_model(
+    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS, solver_name: str = "CBC"
+) -> dict[Algorithm, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
+        thresholds (dict[Algorithm, float]): The lower bounds for the different algorithms
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     n_names = len(df)
     algorithms = [col for col in df.columns if col not in OTHER]
@@ -62,9 +61,7 @@ def solve_simple_model_using_mip(
     return cut_offs
 
 
-def solve_simple_payment_model_using_mip(
-    df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC"
-) -> dict[str, float]:
+def solve_simple_payment_model(df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC") -> dict[Algorithm, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -73,7 +70,7 @@ def solve_simple_payment_model_using_mip(
         mps_filename (str | None, optional): Filename for the mps file. Defaults to None.
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit", "is_hit_true_hit"]].apply(
         lambda row: row
