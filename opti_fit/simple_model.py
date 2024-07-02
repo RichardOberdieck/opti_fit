@@ -33,8 +33,6 @@ def solve_simple_hit_model(
         else:
             objective.append(z[hit_id])
 
-        model += z[hit_id] <= xsum(y[hit_id, a] for a in algorithms if (hit_id, a) in y)
-
         model = define_cutoff_constraints(model, scores, x, y, z, algorithms, hit_id)
 
     # Add objective
@@ -81,10 +79,8 @@ def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC") -> di
 
         for hit_id in hit_df.index:
             model += z[hit_id] <= alpha[payment_id]
-            model += z[hit_id] <= xsum(y[a, hit_id] for a in ALGORITHMS if (a, hit_id) in y)
 
-            scores = df.loc[hit_id]
-            model = define_cutoff_constraints(model, scores, x, y, z, ALGORITHMS, hit_id)
+            model = define_cutoff_constraints(model, df.loc[hit_id], x, y, z, ALGORITHMS, hit_id)
 
     # Add objective
     model.objective = minimize(xsum(objective))
@@ -112,6 +108,7 @@ def define_hit_variables(
 def define_cutoff_constraints(
     model: Model, scores: dict, x: dict, y: dict, z: dict, algorithms: list[Algorithm], hit_id: int
 ) -> Model:
+    model += z[hit_id] <= xsum(y[hit_id, a] for a in algorithms if (hit_id, a) in y)
     for a in algorithms:
         if (hit_id, a) not in y:
             continue
