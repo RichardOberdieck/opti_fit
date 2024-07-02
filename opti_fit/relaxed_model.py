@@ -5,7 +5,10 @@ from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorit
 
 
 def solve_relaxed_hit_model_using_mip(
-    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS, solver_name: str = "CBC"
+    df: pd.DataFrame,
+    mps_filename: str | None = None,
+    thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS,
+    solver_name: str = "CBC",
 ) -> dict[str, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
@@ -50,7 +53,7 @@ def solve_relaxed_hit_model_using_mip(
                 model += y[a, index] <= z[index]
 
     # Add true positive relaxed constraint
-    model += xsum(true_positive_constraint) >= 0.99*len(true_positive_constraint)
+    model += xsum(true_positive_constraint) >= 0.99 * len(true_positive_constraint)
 
     # Add objective
     model.objective = minimize(xsum(objective))

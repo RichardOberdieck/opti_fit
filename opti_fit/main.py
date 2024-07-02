@@ -24,7 +24,7 @@ def run_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
     cutoffs = model.run(df, solver_name=solver_name)
     config_df = pd.DataFrame.from_dict(
         {"model": model, "full_dataset": full_dataset}, orient="index", columns=["Value"]
-    )        
+    )
     performance_df = analyze_performance(df, cutoffs)
     cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
 

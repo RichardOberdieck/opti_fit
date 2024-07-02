@@ -37,7 +37,7 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
         new_df = df.copy(deep=True)
         for weight in weighting:
             str_instance = f"{string_rep} - {weight}"
-            print(f'Solving {str_instance}')
+            print(f"Solving {str_instance}")
             new_df[string_rep] = new_df.apply(
                 lambda row: weight * row[algorithms[0]] + (1 - weight) * row[algorithms[1]], axis=1
             )
@@ -52,13 +52,13 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
             cutoff_results[(string_rep, weight)] = cutoffs
             performance[(string_rep, weight)] = analyze_performance(new_df, cutoffs)
             cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
-            
-            #with pd.ExcelWriter(xlsx_filename, engine="xlsxwriter") as writer:
+
+            # with pd.ExcelWriter(xlsx_filename, engine="xlsxwriter") as writer:
             #    cutoffs_df.to_excel(writer, sheet_name=str_instance, startrow=0, startcol=0)
             #    performance[(string_rep, weight)].to_excel(writer, sheet_name=str_instance, startrow=10, startcol=0)
-            
-            if performance[(string_rep, weight)].loc['Hits', 'Removed False Positive [absolute]'] > best_performance:
-                best_performance = performance[(string_rep, weight)].loc['Hits', 'Removed False Positive [absolute]']
+
+            if performance[(string_rep, weight)].loc["Hits", "Removed False Positive [absolute]"] > best_performance:
+                best_performance = performance[(string_rep, weight)].loc["Hits", "Removed False Positive [absolute]"]
                 best_cutoff = cutoffs
 
     return best_cutoff
