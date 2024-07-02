@@ -4,9 +4,11 @@ from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 
 
-
 def solve_simple_hit_model(
-    df: pd.DataFrame, mps_filename: str | None = None, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS, solver_name: str = "CBC"
+    df: pd.DataFrame,
+    mps_filename: str | None = None,
+    thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS,
+    solver_name: str = "CBC",
 ) -> dict[Algorithm, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
@@ -61,7 +63,9 @@ def solve_simple_hit_model(
     return cut_offs
 
 
-def solve_simple_payment_model(df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC") -> dict[Algorithm, float]:
+def solve_simple_payment_model(
+    df: pd.DataFrame, mps_filename: str | None = None, solver_name: str = "CBC"
+) -> dict[Algorithm, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
