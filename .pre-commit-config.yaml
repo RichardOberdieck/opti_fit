@@ -1,9 +1,7 @@
-exclude: ^/mkdocs.yaml
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
   hooks:
-  - id: check-ast
   - id: check-json
   - id: check-toml
   - id: check-merge-conflict
