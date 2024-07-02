@@ -6,9 +6,20 @@ repo_name: opti_fit
 theme:
   name: "material"
 
+nav:
+  - Home: 'index.md'
+  - Definitions: 'definitions.md'
+  - Dataset: 'the-dataset.md'
+  - Simple Model: 'simple-model.md'
+  - Multiple Cutoff Model: 'multiple-cutoff-model.md'
+  - Relaxing True Positive Requirements: 'relax-the-true-positive-requirement.md'
+  - Solver Comparison: 'solver-comparisons.md'
+  - Future Ideas: 'future-ideas.md'
+
 plugins:
   - search
   - mkdocstrings
+  - plotly
 
 markdown_extensions:
   - admonition
@@ -16,6 +27,11 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: plotly
+          class: mkdocs-plotly
+          format: !!python/name:mkdocs_plotly_plugin.fences.fence_plotly
 
 extra_javascript:
   - javascripts/mathjax.js
