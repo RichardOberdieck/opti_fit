@@ -1,5 +1,5 @@
 import pandas as pd
-from mip import Model, CBC, CONTINUOUS, BINARY, xsum, minimize, GUROBI
+from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 

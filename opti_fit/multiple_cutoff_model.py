@@ -30,7 +30,7 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
     best_performance = 0
     best_cutoff = {}
     filename = None
-    xlsx_filename = f"multiple_cutoffs_full_results_{len(df)}.xlsx"
+    # xlsx_filename = f"multiple_cutoffs_full_results_{len(df)}.xlsx"
 
     for algorithms in tqdm(algorithm_combinations):
         string_rep = algorithms[0].value + "," + algorithms[1].value
@@ -51,7 +51,7 @@ def solve_hit_model_with_multiple_cutoffs_using_mip(
 
             cutoff_results[(string_rep, weight)] = cutoffs
             performance[(string_rep, weight)] = analyze_performance(new_df, cutoffs)
-            cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
+            # cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
 
             # with pd.ExcelWriter(xlsx_filename, engine="xlsxwriter") as writer:
             #    cutoffs_df.to_excel(writer, sheet_name=str_instance, startrow=0, startcol=0)
