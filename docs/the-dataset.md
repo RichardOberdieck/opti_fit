@@ -12,6 +12,11 @@ The dataset in this repository contains the real algorithm scores from the produ
 - **fuzz_token_sort_ratio**: Score of this hit for the algorithm FUZZ_TOKEN_SORT_RATIO
 - **fuzz_partial_token_sort_ratio**: Score of this hit for the algorithm FUZZ_PARTIAL_TOKEN_SORT_RATIO
 
+!!! note
+
+    In the `read_dataset` function of the code, we round the scores to the second digits to reduce numerical issues. Especially since we are looking to calculate cutoffs, having 13 digits after the decimal will not be helpful.
+
+
 ## The dataset in numbers
 
 - 853049 total hits, of which 4023 are true positive hits (0.47%)
