@@ -3,6 +3,9 @@ import pandas as pd
 from opti_fit.dataset_utils import ALGORITHMS
 
 
+TIMELIMIT = 3600  # In seconds
+
+
 def validate_cutoffs(df: pd.DataFrame, cutoffs: dict[int, float], expected_hits: dict[int, float]) -> None:
     scores = df[ALGORITHMS].to_dict(orient="records")
     for count, hit in enumerate(scores):

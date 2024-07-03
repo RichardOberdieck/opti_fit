@@ -64,6 +64,7 @@ installer = "uv"
 
 [tool.hatch.envs.default.scripts]
 solve = "python -m opti_fit.main {args}"
+compare = "python -m opti_fit.compare_solvers {args}"
 
 [tool.hatch.envs.test]
 dependencies = ["opti_fit[test]"]

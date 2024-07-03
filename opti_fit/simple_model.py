@@ -2,18 +2,20 @@ import pandas as pd
 from mip import Model, CONTINUOUS, BINARY, xsum, minimize
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
+from opti_fit.model_utils import TIMELIMIT
 
 
 def solve_simple_hit_model(
-    df: pd.DataFrame, solver_name: str = "CBC", thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
+    df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0, thresholds: dict[Algorithm, float] = CUTOFF_THRESHOLDS
 ) -> dict[Algorithm, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
-        thresholds (dict[Algorithm, float]): The lower bounds for the different algorithms
         solver_name (str): Name of the solver to use
+        seed (int): Random seed for the solver
+        thresholds (dict[Algorithm, float]): The lower bounds for the different algorithms
 
     Returns:
         The optimal cutoffs
@@ -37,20 +39,22 @@ def solve_simple_hit_model(
 
     # Add objective
     model.objective = minimize(xsum(objective))
-    model.optimize()
+    model.seed = seed
+    model.optimize(max_seconds=TIMELIMIT)
 
     cutoffs = {a: v.x for a, v in x.items()}
 
     return cutoffs
 
 
-def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC") -> dict[Algorithm, float]:
+def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[Algorithm, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
         solver_name (str): Name of the solver to use
+        seed (int): Random seed for the solver
 
     Returns:
         The optimal cutoffs
@@ -84,7 +88,8 @@ def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC") -> di
 
     # Add objective
     model.objective = minimize(xsum(objective))
-    model.optimize()
+    model.seed = seed
+    model.optimize(max_seconds=TIMELIMIT)
 
     cutoffs = {a: v.x for a, v in x.items()}
 

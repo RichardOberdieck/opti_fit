@@ -28,11 +28,11 @@ def run_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
     cutoffs_df = pd.DataFrame.from_dict(cutoffs, orient="index", columns=["Cutoff value"])
 
     print("Configuration:")
-    print(config_df.to_markdown(tablefmt="psql", floatfmt=".0f"))
+    print(config_df.to_markdown())
     print("Performance:")
-    print(performance_df.to_markdown(tablefmt="psql", floatfmt=".2f"))
+    print(performance_df.to_markdown())
     print("Cutoffs:")
-    print(cutoffs_df.to_markdown(tablefmt="psql", floatfmt=".2f"))
+    print(cutoffs_df.to_markdown())
 
     if to_file:
         filename = f"results/{model.value}_{full_dataset}.xlsx"

@@ -15,7 +15,7 @@ def solve_hit_model_with_multiple_cutoffs(df: pd.DataFrame, solver_name: str = "
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
-        mps_filename (str | None, optional): Filenames to be saved. Defaults to None.
+        solver_name (str): Name of the solver to use
 
     Returns:
         tuple[dict, dict]: Returns all the cutoff results and the number of hits expected from each combination.
