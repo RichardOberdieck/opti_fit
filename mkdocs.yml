@@ -14,6 +14,7 @@ nav:
   - Multiple Cutoff Model: 'multiple-cutoff-model.md'
   - Relaxing True Positive Requirements: 'relax-the-true-positive-requirement.md'
   - Solver Comparison: 'solver-comparisons.md'
+  - Results: 'results.md'
   - Future Ideas: 'future-ideas.md'
 
 plugins:
