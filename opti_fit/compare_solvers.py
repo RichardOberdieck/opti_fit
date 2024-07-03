@@ -38,7 +38,7 @@ def compare_solvers(model: str, n_seeds: int, full_dataset: bool, to_file: bool)
     results = []
 
     for solver_name in tqdm(solvers):
-        for seed in range(len(n_seeds)):
+        for seed in range(n_seeds):
             start = time()
             cutoffs = model.run(df, solver_name, seed)
             runtime = time() - start

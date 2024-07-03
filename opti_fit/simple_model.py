@@ -1,5 +1,5 @@
 import pandas as pd
-from mip import Model, CONTINUOUS, BINARY, xsum, minimize
+from mip import Model, CONTINUOUS, BINARY, xsum, minimize, Var
 
 from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS, OTHER, Algorithm
 from opti_fit.model_utils import TIMELIMIT
@@ -37,12 +37,8 @@ def solve_simple_hit_model(
 
         model = define_cutoff_constraints(model, scores, x, y, z, algorithms, hit_id)
 
-    # Add objective
     model.objective = minimize(xsum(objective))
-    model.seed = seed
-    model.optimize(max_seconds=TIMELIMIT)
-
-    cutoffs = {a: v.x for a, v in x.items()}
+    cutoffs = solve(model, seed, x)
 
     return cutoffs
 
@@ -86,12 +82,8 @@ def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC", seed:
 
             model = define_cutoff_constraints(model, df.loc[hit_id], x, y, z, ALGORITHMS, hit_id)
 
-    # Add objective
     model.objective = minimize(xsum(objective))
-    model.seed = seed
-    model.optimize(max_seconds=TIMELIMIT)
-
-    cutoffs = {a: v.x for a, v in x.items()}
+    cutoffs = solve(model, seed, x)
 
     return cutoffs
 
@@ -123,3 +115,11 @@ def define_cutoff_constraints(
         model += scores[a] - scores[a] * y[hit_id, a] <= x[a] - 0.01
 
     return model
+
+
+def solve(model: Model, seed: int, x: dict[Algorithm, Var]) -> dict[Algorithm, float]:
+    model.seed = seed
+    model.verbose = 0
+    model.optimize(max_seconds=TIMELIMIT)
+
+    return {a: v.x for a, v in x.items()}

@@ -1,62 +1,93 @@
 import pandas as pd
-from mip import Model, CONTINUOUS, BINARY, xsum, minimize
+from mip import Model, xsum, minimize, BINARY
 
-from opti_fit.dataset_utils import CUTOFF_THRESHOLDS, OTHER
-from opti_fit.model_utils import TIMELIMIT
+from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS
+from opti_fit.simple_model import define_cutoff_constraints, define_hit_variables, solve
 
 
-def solve_relaxed_hit_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[str, float]:
-    """This is the simplest model for this problem. It tries to minimize the false positive hits
-    while keeping the true positives.
+def solve_relaxed_hit_model(
+    df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0, slack: float = 0.99
+) -> dict[str, float]:
+    """This mdoel allows for a fraction of the true positive hits to be violated.
 
     Args:
         df (pd.DataFrame): Data with the scores etc.
         solver_name (str): Name of the solver to use
         seed (int): Random seed for the solver
+        slack (float): Fraction of true positives to keep
 
     Returns:
         dict[str, float]: The optimal cutoffs
     """
-    n_names = len(df)
-    algorithms = [col for col in df.columns if col not in OTHER]
-
     model = Model(solver_name=solver_name)
 
-    # Add the variables
-    x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=CUTOFF_THRESHOLDS[a], ub=100) for a in algorithms}
-    y = {
-        (a, n): model.add_var(f"y_{a},{n}", var_type=BINARY)
-        for a in algorithms
-        for n in range(n_names)
-        if df.loc[n, a] >= CUTOFF_THRESHOLDS[a]
-    }
-    z = {n: model.add_var(f"z_{n}", var_type=BINARY) for n in range(n_names)}
+    x, y, z = define_hit_variables(model, df, CUTOFF_THRESHOLDS, ALGORITHMS)
 
     # Add constraints
     objective = []
     true_positive_constraint = []
-    for index, row in df.iterrows():
-        model += z[index] <= xsum(y[a, index] for a in algorithms if (a, index) in y)
-
-        if row["is_hit_true_hit"]:
-            true_positive_constraint.append(z[index])
+    for hit_id, scores in df.iterrows():
+        if scores["is_hit_true_hit"]:
+            true_positive_constraint.append(z[hit_id])
         else:
-            objective.append(z[index])
+            objective.append(z[hit_id])
 
-        for a in algorithms:
-            if (a, index) in y:
-                model += (row[a] - 100) * y[a, index] >= x[a] - 100
-                model += row[a] - row[a] * y[a, index] <= x[a] - 0.01
-                model += y[a, index] <= z[index]
+        model = define_cutoff_constraints(model, scores, x, y, z, ALGORITHMS, hit_id)
 
     # Add true positive relaxed constraint
-    model += xsum(true_positive_constraint) >= 0.99 * len(true_positive_constraint)
+    model += xsum(true_positive_constraint) >= slack * len(true_positive_constraint)
 
     # Add objective
     model.objective = minimize(xsum(objective))
-    model.seed = seed
-    model.optimize(max_seconds=TIMELIMIT)
+    cutoffs = solve(model, seed, x)
 
-    cut_offs = {a: v.x for a, v in x.items()}
+    return cutoffs
 
-    return cut_offs
+
+def solve_relaxed_payment_model(
+    df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0, slack: float = 0.99
+) -> dict[str, float]:
+    """This mdoel allows for a fraction of the true positive payments to be violated.
+
+    Args:
+        df (pd.DataFrame): Data with the scores etc.
+        solver_name (str): Name of the solver to use
+        seed (int): Random seed for the solver
+        slack (float): Fraction of true positives to keep
+
+    Returns:
+        dict[str, float]: The optimal cutoffs
+    """
+    payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit", "is_hit_true_hit"]].apply(
+        lambda row: row
+    )
+    payment_ids = df["payment_case_id"].unique()
+
+    model = Model(solver_name=solver_name)
+
+    # Add the variables
+    x, y, z = define_hit_variables(model, df, CUTOFF_THRESHOLDS, ALGORITHMS)
+    alpha = {payment_id: model.add_var(f"alpha_{payment_id}", var_type=BINARY) for payment_id in payment_ids}
+
+    # Add constraints
+    objective = []
+    true_positive_constraint = []
+    for payment_id in payment_ids:
+        hit_df = payment_df.loc[payment_id]
+        if hit_df["is_payment_true_hit"].any():
+            true_positive_constraint.append(alpha[payment_id])
+        else:
+            objective.append(alpha[payment_id])
+
+        model += alpha[payment_id] <= xsum(z[hit_id] for hit_id in hit_df.index)
+
+        for hit_id in hit_df.index:
+            model += z[hit_id] <= alpha[payment_id]
+
+            model = define_cutoff_constraints(model, df.loc[hit_id], x, y, z, ALGORITHMS, hit_id)
+
+    model += xsum(true_positive_constraint) >= slack * len(true_positive_constraint)
+    model.objective = minimize(xsum(objective))
+    cutoffs = solve(model, seed, x)
+
+    return cutoffs
