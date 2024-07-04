@@ -15,7 +15,7 @@ from opti_fit.utils.runner_utils import (
 @click.option("--model_name", default="relaxed_hit", help="The relaxed model to solve")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
-@click.option("--solver_name", default="CBC", help="Name of solver to use")
+@click.option("--solver_name", default="CBC", help="Name of solver to use ['GUROBI', 'CBC', 'HIGHS']")
 @click.option("--slacks", default="0.99", help="Single or list of fractions of true positives to keep")
 def run_relaxed_model(model_name: str, full_dataset: bool, to_file: bool, solver_name: str, slacks: list[float]):
     if "relaxed" not in model_name:

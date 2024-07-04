@@ -22,7 +22,7 @@ from opti_fit.utils.runner_utils import (
 )
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
-@click.option("--solver_name", default="CBC", help="Name of solver to use")
+@click.option("--solver_name", default="CBC", help="Name of solver to use ['GUROBI', 'CBC', 'HIGHS']")
 def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file: bool, solver_name: str):
     if "simple" not in base_model_name:
         raise ValueError(f"Invalid model name, should be 'simple_*', but got {base_model_name}")

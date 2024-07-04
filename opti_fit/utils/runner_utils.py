@@ -55,5 +55,5 @@ def print_and_write_results(config_df: pd.DataFrame, result_df: pd.DataFrame, to
 
     if to_file:
         with open(filename, "w") as file:
-            json.dump([config_df.to_dict(), result_df.to_dict()], file)
+            json.dump([config_df.to_dict(orient="index"), result_df.to_dict(orient="index")], file)
         print(f"Written to {filename}")
