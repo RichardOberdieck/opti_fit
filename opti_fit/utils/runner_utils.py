@@ -19,10 +19,14 @@ def parse_and_validate_runner_input(
 
 
 PERFORMANCE_CUTOFF_COLUMNS = [
-    "removed_false_positive_hits",
-    "removed_true_positive_hits",
-    "removed_false_positive_payments",
-    "removed_true_positive_payments",
+    "removed_false_positive_hits_absolute",
+    "removed_false_positive_hits_percent",
+    "removed_true_positive_hits_absolute",
+    "removed_true_positive_hits_percent",
+    "removed_false_positive_payments_absolute",
+    "removed_false_positive_payments_percent",
+    "removed_true_positive_payments_absolute",
+    "removed_true_positive_payments_percent",
     "cutoff_regex_match",
     "cutoff_jaro_winkler",
     "cutoff_fuzz_ratio",
@@ -35,9 +39,13 @@ PERFORMANCE_CUTOFF_COLUMNS = [
 def merge_performance_and_cutoff_output(performance_df: pd.DataFrame, cutoffs: dict[str, float]) -> tuple:
     return (
         performance_df.loc["Hits", "Removed False Positive [absolute]"],
+        performance_df.loc["Hits", "Removed False Positive [%]"],
         performance_df.loc["Hits", "Removed True Positive [absolute]"],
+        performance_df.loc["Hits", "Removed True Positive [%]"],
         performance_df.loc["Payment", "Removed False Positive [absolute]"],
+        performance_df.loc["Payment", "Removed False Positive [%]"],
         performance_df.loc["Payment", "Removed True Positive [absolute]"],
+        performance_df.loc["Payment", "Removed True Positive [%]"],
         cutoffs["regex_match"],
         cutoffs["jaro_winkler"],
         cutoffs["fuzz_ratio"],
