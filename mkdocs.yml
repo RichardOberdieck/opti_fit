@@ -5,6 +5,23 @@ repo_name: opti_fit
 
 theme:
   name: "material"
+  features:
+    - content.code.copy
+  palette: 
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+
 
 nav:
   - Home: 'index.md'
@@ -14,6 +31,7 @@ nav:
   - Multiple Cutoff Model: 'multiple-cutoff-model.md'
   - Relaxing True Positive Requirements: 'relax-the-true-positive-requirement.md'
   - Solver Comparison: 'solver-comparisons.md'
+  - Results: 'results.md'
   - Future Ideas: 'future-ideas.md'
 
 plugins:
@@ -25,6 +43,7 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - tables
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.superfences:
