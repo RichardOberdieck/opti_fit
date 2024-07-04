@@ -1,34 +1,39 @@
 # Results
 
-- Just by applying the simple models
+## Overview
+
+- Just by applying the simple model results in a significant reduction of false positives:
+
+| Model        | FP hit reduction [%]  | FP payment reduction [%] |
+| ------------ | --------------------- | -------------------------|
+| Hit          |                 15.16 |                     9.66 |
+| Payment      |                   TBD |                      TBD |
+
+- 
 
 
-## Results
 
-### Simple hit model
+## Simple hit model
 
-Configuration:
-+--------------+----------------+
-|              | Value          |
-|--------------+----------------|
-| model        | simple_hit_mip |
-| full_dataset | True           |
-+--------------+----------------+
 Performance:
-+---------+-----------+-----------------------+-------------------------------------+------------------------------+------------------------------------+-----------------------------+
-| Type    |     Total |   Total True Positive |   Removed False Positive [absolute] |   Removed False Positive [%] |   Removed True Positive [absolute] |   Removed True Positive [%] |
-|---------+-----------+-----------------------+-------------------------------------+------------------------------+------------------------------------+-----------------------------|
-| Payment | 379691.00 |               9967.00 |                            28590.00 |                         7.53 |                               0.00 |                        0.00 |
-| Hits    | 853049.00 |               4023.00 |                           110555.00 |                        12.96 |                               0.00 |                        0.00 |
-+---------+-----------+-----------------------+-------------------------------------+------------------------------+------------------------------------+-----------------------------+
+
+| Type    |   Total |   Total True Positive |   Removed False Positive [absolute] |   Removed False Positive [%] |   Removed True Positive [absolute] |   Removed True Positive [%] |
+|:--------|--------:|----------------------:|------------------------------------:|-----------------------------:|-----------------------------------:|----------------------------:|
+| Payment |  379691 |                  9967 |                               36684 |                      9.66154 |                                  0 |                           0 |
+| Hits    |  853049 |                  4023 |                              129320 |                     15.1597  |                                  0 |                           0 |
+
 Cutoffs:
-+-------------------------------+----------------+
+
 |                               |   Cutoff value |
-|-------------------------------+----------------|
+|:------------------------------|---------------:|
 | regex_match                   |          91.68 |
-| jaro_winkler                  |          93.28 |
-| fuzz_ratio                    |          81.04 |
-| fuzz_token_sort_ratio         |          84.12 |
-| fuzz_partial_token_sort_ratio |         100.00 |
-| fuzz_partial_ratio            |          97.15 |
-+-------------------------------+----------------+
+| jaro_winkler                  |          88.43 |
+| fuzz_ratio                    |          84.12 |
+| fuzz_token_sort_ratio         |          81.2  |
+| fuzz_partial_token_sort_ratio |          97.15 |
+| fuzz_partial_ratio            |          97.31 |
+
+
+|    |   removed_false_positive_hits_absolute |   removed_false_positive_hits_percent |   removed_true_positive_hits_absolute |   removed_true_positive_hits_percent |   removed_false_positive_payments_absolute |   removed_false_positive_payments_percent |   removed_true_positive_payments_absolute |   removed_true_positive_payments_percent |   cutoff_regex_match |   cutoff_jaro_winkler |   cutoff_fuzz_ratio |   cutoff_fuzz_partial_ratio |   cutoff_fuzz_token_sort_ratio |   cutoff_fuzz_partial_token_sort_ratio |
+|---:|---------------------------------------:|--------------------------------------:|--------------------------------------:|-------------------------------------:|-------------------------------------------:|------------------------------------------:|------------------------------------------:|-----------------------------------------:|---------------------:|----------------------:|--------------------:|----------------------------:|-------------------------------:|---------------------------------------:|
+|  0 |                                 129320 |                               15.1597 |                                     0 |                                    0 |                                      36684 |                                   9.66154 |                                         0 |                                        0 |                91.68 |                 88.43 |               84.12 |                       97.31 |                           81.2 |                                  97.15 |
