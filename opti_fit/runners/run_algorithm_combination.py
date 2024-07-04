@@ -1,3 +1,4 @@
+from typing import Callable
 import pandas as pd
 import click
 import numpy as np
@@ -33,6 +34,17 @@ def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file:
         columns=["Value"],
     )
 
+    result = iterate_over_combinations(df, base_model, solver_name)
+
+    result_df = pd.DataFrame.from_records(
+        result, columns=["algorithm_A", "algorithm_B", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
+    )
+    result_df.sort_values(by="removed_false_positive_hits", axis=1, inplace=True, ascending=False)
+    filename = f"results/{base_model_name}_{solver_name}_{get_hash(df)}.json"
+    print_and_write_results(config_df, result_df, to_file, filename)
+
+
+def iterate_over_combinations(df: pd.DataFrame, base_model: Callable, solver_name: str) -> list[tuple]:
     algorithm_combinations = combinations(ALGORITHMS, 2)
     weighting = np.linspace(0.1, 0.4, 3)
     result = []
@@ -48,14 +60,9 @@ def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file:
             cutoffs = base_model(df, solver_name)
 
             performance = analyze_performance(df, cutoffs)
-            result.append(instance + merge_performance_and_cutoff_output(performance, cutoffs) + (cutoffs[string_rep]))
+            result.append(instance + merge_performance_and_cutoff_output(performance, cutoffs) + (cutoffs[string_rep],))
 
-    result_df = pd.DataFrame.from_records(
-        result, columns=["algorithm_A", "algorithm_B", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
-    )
-    result_df.sort_values(by="removed_false_positive_hits", axis=1, inplace=True, ascending=False)
-    filename = f"results/{base_model_name}_{solver_name}_{get_hash(df)}.json"
-    print_and_write_results(config_df, result_df, to_file, filename)
+    return result
 
 
 def get_string_representation(algorithms: list[Algorithm]) -> str:
