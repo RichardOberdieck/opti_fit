@@ -16,7 +16,35 @@ Based on these models, we investigated how much better of a reduction we can ach
 
 As we were provided a free evaluation license by [Gurobi Optimization](https://gurobi.com) for a portion of this work, we also were interested in the impact of using a commerical versus an open-source solver in terms of runtime, stability and results. This analysis can be found in the [Solver Comparison](solver-comparisons.md) section.
 
-### Reproducibility
+## Getting started
+
+The code uses [hatch](https://hatch.pypa.io/) as a project manager, with the `pyproject.toml` file for configuration. There are four command-line scripts that are defined to run the analysis:
+
+- `hatch run simple`: Solves the simple hit, payment or combined models, see the [Simple Model](simple-model.md) section.
+- `hatch run relaxed`: Solves the relaxed hit or payment model, see the [Relax True Positive Requirement](relax-the-true-positive-requirement.md) section.
+- `hatch run combination`: Solve the algorithm combination model, see the [Algorithm Combination](algorithm-combination.md) section.
+- `hatch run compare`: Compares the different solvers, see the [Solver Comparison](solver-comparisons.md) section.
+
+To get started, install `hatch` and run one of the commands, e.g.:
+
+```
+hatch run simple
+```
+
+This will execute the script that picks a simple model, a dataset and solves it with the default settings. If you would like to specify the details, you can pass them as arguments, e.g.:
+
+```
+hatch run solve --model_name='simple_hit' --full_dataset=False --to_file=True
+```
+
+For more information, please check the help:
+
+```
+hatch run simple --help
+```
+
+
+## Reproducibility
 This repository is designed to be complete, i.e. all results reported can be reproduced from the data provided. Each model starts with the `hatch` command needed to run the code. Note that this may be very time consuming and require 32GB or more of RAM, depending on the dataset that is being solved.
 
 In addition, all the versions of packages used are pinned to make it easier to reproduce the results. However, this is not the case for [the CBC solver](https://github.com/coin-or/Cbc), which is downloaded by cloning the corresponding Github repository. This is an in-built design choice by the modeling framework `python-mip` that we used. 

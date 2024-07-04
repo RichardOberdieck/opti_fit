@@ -1,23 +1,34 @@
 # opti_fit
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/RichardOberdieck/opti_fit/automatic_checks.yaml?branch=main)
-
-![GitHub License](https://img.shields.io/github/license/RichardOberdieck/:repo)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/RichardOberdieck/opti_fit/automatic_checks.yaml?branch=main) ![GitHub License](https://img.shields.io/github/license/RichardOberdieck/opti_fit)
 
 
 Scripts and data related to the finding of optimal thresholds for string matching. The full docs can be found [here](https://richardoberdieck.github.io/opti_fit/).
 
 ## How to run it
-The code uses [hatch](https://hatch.pypa.io/) as a project manager, with the `pyproject.toml` file for configuration. To get started, install hatch and then run:
+The code uses [hatch](https://hatch.pypa.io/) as a project manager, with the `pyproject.toml` file for configuration. There are four command-line scripts that are defined to run the analysis:
+
+- `hatch run simple`: Solves the simple hit, payment or combined models
+- `hatch run relaxed`: Solves the relaxed hit or payment model
+- `hatch run combination`: Solve the algorithm combination model
+- `hatch run compare`: Compares the different solvers
+
+To get started, install `hatch` and run one of the commands, e.g.:
 
 ```
-hatch run solve
+hatch run simple
 ```
 
-This will execute the [main](./opti_fit/main.py) script that picks a model, a dataset and solves it with the default settings. If you would like to specify the details, you can pass them as arguments, e.g.:
+This will execute the [run_simple_model.py](./opti_fit/run_simple_model.py) script that picks a model, a dataset and solves it with the default settings. If you would like to specify the details, you can pass them as arguments, e.g.:
 
 ```
-hatch run solve --model='simple_hit_mip' --full_dataset=False --to_file=True
+hatch run solve --model_name='simple_hit' --full_dataset=False --to_file=True
+```
+
+For more information, please check the help:
+
+```
+hatch run simple --help
 ```
 
 ## How to contribute
