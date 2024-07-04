@@ -4,9 +4,9 @@ import click
 from time import time
 from tqdm import tqdm
 
-from opti_fit.dataset_utils import Algorithm, read_dataset
-from opti_fit.model_utils import analyze_performance
-from opti_fit.models import Model
+from opti_fit.utils.dataset_utils import Algorithm, read_dataset
+from opti_fit.utils.model_utils import analyze_performance
+from opti_fit.models.models import Model
 
 
 @click.command()

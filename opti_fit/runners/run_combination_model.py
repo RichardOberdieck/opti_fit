@@ -2,9 +2,9 @@ import os
 import pandas as pd
 import click
 
-from opti_fit.dataset_utils import read_dataset
-from opti_fit.model_utils import analyze_performance
-from opti_fit.models import Model
+from opti_fit.utils.dataset_utils import read_dataset
+from opti_fit.utils.model_utils import analyze_performance
+from opti_fit.models.models import Model
 
 
 @click.command()
@@ -12,7 +12,7 @@ from opti_fit.models import Model
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
 @click.option("--solver_name", default="CBC", help="Name of solver to use")
-def run_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
+def run_simple_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
     model = Model(model)
     if solver_name not in ["GUROBI", "GRB", "CBC", "HIGHS"]:
         raise ValueError(f"Invalid solver name, got {solver_name}")
@@ -44,4 +44,4 @@ def run_model(model: str, full_dataset: bool, to_file: bool, solver_name: str):
 
 
 if __name__ == "__main__":
-    run_model()
+    run_simple_model()

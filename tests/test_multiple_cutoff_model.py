@@ -1,5 +1,5 @@
-from opti_fit.dataset_utils import ALGORITHMS
-from opti_fit.multiple_cutoff_model import solve_hit_model_with_multiple_cutoffs
+from opti_fit.utils.dataset_utils import ALGORITHMS
+from opti_fit.models.combination_model import solve_hit_model_with_multiple_cutoffs
 
 
 def test_solve_hit_model_with_multiple_cutoffs_using_mip(simple_df):

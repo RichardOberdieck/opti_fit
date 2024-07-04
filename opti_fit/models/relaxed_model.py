@@ -1,8 +1,8 @@
 import pandas as pd
 from mip import Model, xsum, minimize, BINARY
 
-from opti_fit.dataset_utils import ALGORITHMS, CUTOFF_THRESHOLDS
-from opti_fit.simple_model import define_cutoff_constraints, define_hit_variables, solve
+from opti_fit.utils.dataset_utils import ALGORITHMS
+from opti_fit.models.simple_model import define_cutoff_constraints, define_hit_variables, solve
 
 
 def solve_relaxed_hit_model(
@@ -21,7 +21,7 @@ def solve_relaxed_hit_model(
     """
     model = Model(solver_name=solver_name)
 
-    x, y, z = define_hit_variables(model, df, CUTOFF_THRESHOLDS, ALGORITHMS)
+    x, y, z = define_hit_variables(model, df, ALGORITHMS)
 
     # Add constraints
     objective = []
@@ -66,7 +66,7 @@ def solve_relaxed_payment_model(
     model = Model(solver_name=solver_name)
 
     # Add the variables
-    x, y, z = define_hit_variables(model, df, CUTOFF_THRESHOLDS, ALGORITHMS)
+    x, y, z = define_hit_variables(model, df, ALGORITHMS)
     alpha = {payment_id: model.add_var(f"alpha_{payment_id}", var_type=BINARY) for payment_id in payment_ids}
 
     # Add constraints

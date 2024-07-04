@@ -67,7 +67,9 @@ docs = [
 installer = "uv"
 
 [tool.hatch.envs.default.scripts]
-solve = "python -m opti_fit.main {args}"
+simple = "python -m opti_fit.runners.run_simple_model {args}"
+relaxed = "python -m opti_fit.runners.run_relaxed_model {args}"
+combination = "python -m opti_fit.runners.run_combination_model {args}"
 compare = "python -m opti_fit.compare_solvers {args}"
 
 [tool.hatch.envs.test]

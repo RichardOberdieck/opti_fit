@@ -1,11 +1,11 @@
 import pandas as pd
-from opti_fit.dataset_utils import ALGORITHMS, OTHER
+from opti_fit.utils.dataset_utils import ALGORITHMS, OVERVIEW_COLUMNS
 from pytest import fixture
 
 
 @fixture
 def simple_df():
-    columns = OTHER + ALGORITHMS
+    columns = OVERVIEW_COLUMNS + ALGORITHMS
     data = [
         (1, True, True, 100, 100, 100, 100, 100, 100),
         (1, True, False, 60, 70, 80, 75, 85, 90),

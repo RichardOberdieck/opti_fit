@@ -1,6 +1,6 @@
 import pandas as pd
 
-from opti_fit.dataset_utils import ALGORITHMS
+from opti_fit.utils.dataset_utils import ALGORITHMS
 
 
 TIMELIMIT = 3600  # In seconds
@@ -83,14 +83,17 @@ def analyze_performance(df: pd.DataFrame, cutoffs) -> pd.DataFrame:
 
     return pd.DataFrame.from_records(
         data,
-        columns=[
-            "Type",
-            "Total",
-            "Total True Positive",
-            "Removed False Positive [absolute]",
-            "Removed False Positive [%]",
-            "Removed True Positive [absolute]",
-            "Removed True Positive [%]",
-        ],
+        columns=PERFORMANCE_COLUMNS,
         index="Type",
     )
+
+
+PERFORMANCE_COLUMNS = [
+    "Type",
+    "Total",
+    "Total True Positive",
+    "Removed False Positive [absolute]",
+    "Removed False Positive [%]",
+    "Removed True Positive [absolute]",
+    "Removed True Positive [%]",
+]
