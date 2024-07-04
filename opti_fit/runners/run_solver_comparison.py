@@ -14,7 +14,7 @@ from opti_fit.utils.runner_utils import (
 
 
 @click.command()
-@click.option("--model_name", default="simple_hit_mip", help="The model to solve")
+@click.option("--model_name", default="simple_hit", help="The model to solve")
 @click.option("--n_seeds", default=5, help="Number of random seeds used")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
