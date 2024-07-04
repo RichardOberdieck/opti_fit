@@ -6,7 +6,6 @@ from opti_fit.models.simple_model import (
     solve_simple_hit_model,
     solve_simple_payment_model,
 )
-from opti_fit.models.combination_model import solve_model_with_multiple_cutoffs
 
 
 def get_model(model_str: str) -> Callable:
@@ -21,7 +20,5 @@ def get_model(model_str: str) -> Callable:
             return solve_relaxed_hit_model
         case "relaxed_payment":
             return solve_relaxed_payment_model
-        case "multiple_cutoff":
-            return solve_model_with_multiple_cutoffs
         case _:
             raise ValueError("Undefined model")
