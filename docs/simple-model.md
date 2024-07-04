@@ -10,7 +10,7 @@ A payment has one or more hits associated with it, and if at least one hit is a 
 ## Removing false positive hits
 
 ```
-hatch run solve --model='simple_hit_mip'
+hatch run simple --model='simple_hit'
 ```
 
 To identify the optimal cut-off values for removing false positive hits, we formulate the following mathematical optimization problem:
@@ -18,7 +18,7 @@ To identify the optimal cut-off values for removing false positive hits, we form
 $$
 \begin{array}{llll}
 \text{minimize} & \sum_{h \in FP} z_h & & \text{(Minimize false positive hits)} \\
-\text{subject to} & \sum_{h \in TP} z_h = 1 & & \text{(Ensure true positive hits)}\\
+\text{subject to} & z_h = 1 & \forall h \in TP & \text{(Ensure true positive hits)}\\
 & z_h \leq \sum_{a} y_{h, a} & \forall h & \text{(If all $y_{h,a}=0$, then $z_h=0$)}\\
 & y_{h, a} \leq z_h & \forall h, a & \text{(If any $y_{h,a} = 1$, then $z_h = 1$)} \\
 & s_{h, a} - 100y_{h, a} \geq x_a - 100 & \forall h, a & \text{(If $y_{h,a} = 1$, then $s_{h, a} \geq x_a$ for a given hit $h$)}\\
@@ -43,7 +43,7 @@ where:
 ## Removing false positive payments
 
 ```
-hatch run solve --model='simple_payment_mip'
+hatch run simple --model='simple_payment'
 ```
 
 To identify the optimal cut-off values for removing false positive payments, we formulate the following mathematical optimization problem:
@@ -79,6 +79,20 @@ where:
 !!! note
 
     Since we only enforce that we have keep the true positive payments, not the true positive hits, it is possible that solving this model removes true positive hits.
+
+## Removing false positive payments while respecting true positive hits
+
+```
+hatch run simple --model='simple_combined'
+```
+
+To respecte the true positive nature of the hits, we simply have to add this constraint to the payment model:
+
+$$
+z_h = 1 & \forall h \in TP_{hits}
+$$
+
+where $TP_{hits}$ is the set of all true positive hits.
 
 ## Implementations
 

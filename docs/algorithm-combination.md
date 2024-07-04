@@ -1,7 +1,7 @@
 # Algorithm Combination
 
 ```
-hatch run solve --model='cutoff_combination_hit'
+hatch run combination --model_name='simple_hit'
 ```
 
 Having investigated the results from running the [simple models](simple-model.md), we were curious whether it would be beneficial to combine the scores of two algorithms together in order to gain an additional degree of freedom that can be used to remove false positives. We chose the following approach:

@@ -22,7 +22,7 @@ hatch run simple
 This will execute the [run_simple_model.py](./opti_fit/run_simple_model.py) script that picks a model, a dataset and solves it with the default settings. If you would like to specify the details, you can pass them as arguments, e.g.:
 
 ```
-hatch run solve --model_name='simple_hit' --full_dataset=False --to_file=True
+hatch run simple --model_name='simple_hit' --full_dataset=False --to_file=True
 ```
 
 For more information, please check the help:

@@ -1,7 +1,11 @@
 # Relax the true positive requirement
 
 ```
-hatch run solve --model='relaxed_true_positive'
+hatch run relaxed --model='relaxed_hit'
+```
+
+```
+hatch run relaxed --model='relaxed_payment'
 ```
 
 What is the "cost", mathematically speaking, of enforcing that all true positives should be a hit? And how would that change if we were to relax this constraint?
