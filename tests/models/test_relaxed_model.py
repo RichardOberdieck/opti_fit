@@ -1,8 +1,8 @@
-from opti_fit.model_utils import (
+from opti_fit.utils.model_utils import (
     check_hit_solution,
     check_payment_solution,
 )
-from opti_fit.simple_model import (
+from opti_fit.models.simple_model import (
     solve_simple_hit_model,
     solve_simple_payment_model,
 )

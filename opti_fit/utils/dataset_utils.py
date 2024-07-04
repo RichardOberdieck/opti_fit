@@ -1,3 +1,4 @@
+import hashlib
 import pandas as pd
 import numpy as np
 from enum import Enum
@@ -12,18 +13,8 @@ class Algorithm(str, Enum):
     FUZZ_PARTIAL_TOKEN_SORT_RATIO = "fuzz_partial_token_sort_ratio"
 
 
+OVERVIEW_COLUMNS = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"]
 ALGORITHMS = [a for a in set(Algorithm)]  # Want a list of easy pandas code
-OTHER = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"]
-
-CUTOFF_THRESHOLDS = {
-    Algorithm.REGEX_MATCH: 90,
-    Algorithm.JARO_WINKLER: 93,
-    Algorithm.FUZZ_PARTIAL_TOKEN_SORT_RATIO: 100,
-    Algorithm.FUZZ_TOKEN_SORT_RATIO: 84,
-    Algorithm.FUZZ_PARTIAL_RATIO: 97,
-    Algorithm.FUZZ_RATIO: 81,
-}
-
 
 data_types = {
     "payment_case_id": np.int64,
@@ -49,7 +40,7 @@ def read_dataset(filename: str, validate: bool = True) -> pd.DataFrame:
 
 def _validate_dataset(df: pd.DataFrame) -> None:
     # Validation 1 - column names
-    assert set(df.columns) == set(OTHER).union(ALGORITHMS)
+    assert set(df.columns) == set(OVERVIEW_COLUMNS).union(ALGORITHMS)
 
     # Validation 2 - all scores are between 0 and 100
     assert df[ALGORITHMS].min(axis=None) >= 0
@@ -70,3 +61,7 @@ def round_scores(df: pd.DataFrame) -> pd.DataFrame:
     for algorithm in ALGORITHMS:
         df[algorithm] = df[algorithm].apply(lambda row: round(row, 2))
     return df
+
+
+def get_hash(df: pd.DataFrame) -> str:
+    return hashlib.sha1(pd.util.hash_pandas_object(df).values).hexdigest()
