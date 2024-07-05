@@ -45,11 +45,12 @@ def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file:
 
 
 def iterate_over_combinations(df: pd.DataFrame, base_model: Callable, solver_name: str) -> list[tuple]:
-    algorithm_combinations = combinations(ALGORITHMS, 2)
-    weighting = np.linspace(0.1, 0.4, 3)
+    algorithm_combinations = set([frozenset(combination) for combination in combinations(ALGORITHMS, 2)])
+    weighting = np.linspace(0.1, 0.9, 5)
     result = []
 
-    for algorithms in tqdm(algorithm_combinations):
+    for algorithms_set in tqdm(algorithm_combinations):
+        algorithms = list(algorithms_set)
         string_rep = get_string_representation(algorithms)
 
         for weight in weighting:
