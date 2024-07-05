@@ -3,7 +3,7 @@ import pandas as pd
 from opti_fit.utils.dataset_utils import ALGORITHMS
 
 
-TIMELIMIT = 3600  # In seconds
+TIMELIMIT = 36000  # In seconds = 10 hours
 DEFAULT_SEED = 0
 PERFORMANCE_COLUMNS = [
     "Type",

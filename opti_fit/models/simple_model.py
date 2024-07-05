@@ -161,7 +161,7 @@ def define_cutoff_constraints(
 
 def solve(model: Model, seed: int, x: dict[Algorithm, Var]) -> dict[Algorithm, float]:
     model.seed = seed
-    model.verbose = 0
+    # model.verbose = 0
     model.optimize(max_seconds=TIMELIMIT)
 
     return {a: v.x for a, v in x.items()}
