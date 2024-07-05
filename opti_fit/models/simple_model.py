@@ -1,11 +1,11 @@
 import pandas as pd
 from mip import Model, CONTINUOUS, BINARY, xsum, minimize, Var
 
-from opti_fit.utils.dataset_utils import ALGORITHMS, OVERVIEW_COLUMNS, Algorithm
+from opti_fit.utils.dataset_utils import ALGORITHMS, OVERVIEW_COLUMNS
 from opti_fit.utils.model_utils import TIMELIMIT
 
 
-def solve_simple_hit_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[Algorithm, float]:
+def solve_simple_hit_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[str, float]:
     """This is the simplest model for this problem. It tries to minimize the false positive hits
     while keeping the true positives.
 
@@ -40,7 +40,7 @@ def solve_simple_hit_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int
     return cutoffs
 
 
-def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[Algorithm, float]:
+def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[str, float]:
     """This model goes one level up from the simple hit model, as it considers
     that payments should be true positives, rather than hits.
 
@@ -85,7 +85,7 @@ def solve_simple_payment_model(df: pd.DataFrame, solver_name: str = "CBC", seed:
     return cutoffs
 
 
-def solve_simple_combined_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[Algorithm, float]:
+def solve_simple_combined_model(df: pd.DataFrame, solver_name: str = "CBC", seed: int = 0) -> dict[str, float]:
     """This model combines the hit and payment models such that we should not have any true positive
     violations while minimizing the true positive payments.
 
@@ -132,11 +132,11 @@ def solve_simple_combined_model(df: pd.DataFrame, solver_name: str = "CBC", seed
     return cutoffs
 
 
-def define_hit_variables(model: Model, df: pd.DataFrame, algorithms: list[Algorithm]) -> tuple[dict, dict, dict]:
+def define_hit_variables(model: Model, df: pd.DataFrame, algorithms: list[str]) -> tuple[dict, dict, dict]:
     x = {a: model.add_var(f"x_{a}", var_type=CONTINUOUS, lb=80, ub=100) for a in algorithms}
     y = {
         (hit_id, a): model.add_var(f"y_{a},{hit_id}", var_type=BINARY)
-        for a in ALGORITHMS
+        for a in algorithms
         for hit_id in df.index
         if df.loc[hit_id, a] >= 80
     }
@@ -145,7 +145,7 @@ def define_hit_variables(model: Model, df: pd.DataFrame, algorithms: list[Algori
 
 
 def define_cutoff_constraints(
-    model: Model, scores: dict, x: dict, y: dict, z: dict, algorithms: list[Algorithm], hit_id: int
+    model: Model, scores: dict, x: dict, y: dict, z: dict, algorithms: list[str], hit_id: int
 ) -> Model:
     model += z[hit_id] <= xsum(y[hit_id, a] for a in algorithms if (hit_id, a) in y)
     for a in algorithms:
@@ -159,7 +159,7 @@ def define_cutoff_constraints(
     return model
 
 
-def solve(model: Model, seed: int, x: dict[Algorithm, Var]) -> dict[Algorithm, float]:
+def solve(model: Model, seed: int, x: dict[str, Var]) -> dict[str, float]:
     model.seed = seed
     model.verbose = 0
     model.optimize(max_seconds=TIMELIMIT)

@@ -23,7 +23,7 @@ $$
 & y_{h, a} \leq z_h & \forall h, a & \text{(If any $y_{h,a} = 1$, then $z_h = 1$)} \\
 & s_{h, a} - 100y_{h, a} \geq x_a - 100 & \forall h, a & \text{(If $y_{h,a} = 1$, then $s_{h, a} \geq x_a$ for a given hit $h$)}\\
 & s_{h, a} - s_{h, a}y_{h, a} \leq x_a - \epsilon & \forall h, a & \text{(If $y_{h,a} = 0$, then $s_{h, a} < x_a$)} \\
-& x_a \in [0,100] & \forall a & \\
+& x_a \in [80,100] & \forall a & \\
 & y_{h, a} \in \{0,1\} & \forall a,h & \\
 & z_h \in \{0,1\} & \forall h & \\
 \end{array}
@@ -38,6 +38,10 @@ where:
 - $TP$ is the set of true positives hits.
 - $s_{h,a}$ are the scores for algorithm $a$ and name $h$.
 - $\epsilon$ is the tolerance to make the "less than" work mathematically.
+
+!!! info
+    
+    Theoretically, a lower bound of 0 on the $x_a$ variable would be correct, as one cannot by definition exclude those scores below 80. However, this leads to a tremendous increase in the problem size and therefore, we deemed 80 to be a good threshold. As the [Results](results.md) section shows, none of the optimal cutoffs calculated reach the lower bound of 80.
 
 
 ## Removing false positive payments
@@ -58,7 +62,7 @@ $$
 & y_{h,a} \leq z_h & \forall h, a & \text{(If any $y_{h,a} = 1$, then $z_h = 1$)} \\
 & s_{h,a} - 100y_{h,a} \geq x_a - 100 & \forall h, a & \text{(If $y_{h,a} = 1$, then $s_{h,a} \geq x_a$)}\\
 & s_{h,a} - s_{h,a}y_{h,a} \leq x_a - \epsilon & \forall h, a & \text{(If $y_{h,a} = 0$, then $s_{h,a} < x_a$)} \\
-& x_a \in [0,100] & \forall a & \\
+& x_a \in [80,100] & \forall a & \\
 & y_{h,a} \in \{0,1\} & \forall a,h & \\
 & z_h \in \{0,1\} & \forall h & \\
 & \alpha_p \in \{0,1\} & \forall p & \\

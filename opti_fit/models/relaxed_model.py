@@ -15,7 +15,7 @@ def solve_relaxed_hit_model(df: pd.DataFrame, solver_name: str = "CBC", slack: f
         slack (float): Fraction of true positives to keep
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     model = Model(solver_name=solver_name)
 
@@ -51,7 +51,7 @@ def solve_relaxed_payment_model(df: pd.DataFrame, solver_name: str = "CBC", slac
         slack (float): Fraction of true positives to keep
 
     Returns:
-        dict[str, float]: The optimal cutoffs
+        The optimal cutoffs
     """
     payment_df = df.groupby("payment_case_id", group_keys=True)[["is_payment_true_hit", "is_hit_true_hit"]].apply(
         lambda row: row

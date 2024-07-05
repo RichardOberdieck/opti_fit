@@ -14,7 +14,7 @@ class Algorithm(str, Enum):
 
 
 OVERVIEW_COLUMNS = ["payment_case_id", "is_payment_true_hit", "is_hit_true_hit"]
-ALGORITHMS = [a for a in set(Algorithm)]  # Want a list of easy pandas code
+ALGORITHMS = sorted([a.value for a in set(Algorithm)])  # Want a list of easy pandas code
 
 data_types = {
     "payment_case_id": np.int64,
