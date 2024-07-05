@@ -16,16 +16,6 @@ PERFORMANCE_COLUMNS = [
 ]
 
 
-def validate_cutoffs(df: pd.DataFrame, cutoffs: dict[int, float], expected_hits: dict[int, float]) -> None:
-    scores = df[ALGORITHMS].to_dict(orient="records")
-    for count, hit in enumerate(scores):
-        is_still_hit = any([hit[a] >= cutoffs[a] for a in ALGORITHMS])
-        if expected_hits[count] is True:
-            assert is_still_hit
-        else:
-            assert not is_still_hit
-
-
 def check_hit_solution(df: pd.DataFrame, cutoffs, validate: bool = False) -> tuple[int, int]:
     n_hits = 0
     true_positives_removed = 0

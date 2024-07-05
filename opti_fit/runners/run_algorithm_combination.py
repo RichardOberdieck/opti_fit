@@ -67,7 +67,7 @@ def iterate_over_combinations(df: pd.DataFrame, base_model: Callable, solver_nam
 
 
 def get_string_representation(algorithms: list[Algorithm]) -> str:
-    return algorithms[0].value + "," + algorithms[1].value
+    return algorithms[0] + "," + algorithms[1]
 
 
 def update_df(df: pd.DataFrame, algorithms: list[Algorithm], weight: float) -> pd.DataFrame:
