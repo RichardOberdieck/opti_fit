@@ -34,7 +34,6 @@ def run_algorithm_combination(base_model_type: str, full_dataset: bool, to_file:
     result_df = pd.DataFrame.from_records(
         result, columns=["algorithms", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
     )
-    result_df.sort_values(by="removed_false_positive_hits", axis=1, inplace=True, ascending=False)
     filename = f"results/{base_model_name}_{solver_name}_{get_hash(df)}.json"
     print_and_write_results(config_df, result_df, to_file, filename)
 

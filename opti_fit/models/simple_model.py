@@ -161,6 +161,18 @@ def define_cutoff_constraints(
 
 def solve(model: Model, seed: int, x: dict[str, Var]) -> dict[str, float]:
     model.seed = seed
-    # model.verbose = 0
+    with open("data/hit_start.mst", "r") as file:
+        start_data = file.readlines()
+    # Ignore first line as it is a comment
+    mip_start = []
+    for line in start_data[1:]:
+        entries = line.split(" ")
+        if len(entries) != 2:
+            raise ValueError()
+        var = model.var_by_name(entries[0])
+        if var is not None:
+            mip_start.append((var, float(entries[1][:-1])))  # Need to get rid of \n
+
+    model.start = mip_start
     model.optimize(max_seconds=TIMELIMIT)
     return {a: v.x for a, v in x.items()}
