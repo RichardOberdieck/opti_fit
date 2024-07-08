@@ -14,11 +14,12 @@ from opti_fit.utils.runner_utils import (
 
 
 @click.command()
-@click.option("--model_name", default="simple_hit", help="The model to solve")
+@click.option("--model_type", default="hit", help="The model type [hit, payment, combined]")
 @click.option("--n_seeds", default=5, help="Number of random seeds used")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
-def run_solver_comparison(model_name: str, n_seeds: int, full_dataset: bool, to_file: bool):
+def run_solver_comparison(model_type: str, n_seeds: int, full_dataset: bool, to_file: bool):
+    model_name = "simple_" + model_type
     solvers = ["GUROBI", "CBC", "HIGHS"]
     model, df = parse_and_validate_runner_input(model_name=model_name, full_dataset=full_dataset)
     config_df = pd.DataFrame.from_dict(
