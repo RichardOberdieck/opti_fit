@@ -20,3 +20,5 @@ In order to make the results as robust as possible, we considered the following:
 - Use 5 different random seeds
 
 ## Results
+
+Gurobi is order of magnitudes more performant and efficient than HiGHS and CBC. 
