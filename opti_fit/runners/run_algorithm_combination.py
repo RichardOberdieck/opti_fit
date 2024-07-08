@@ -16,17 +16,12 @@ from opti_fit.utils.runner_utils import (
 
 
 @click.command()
-@click.option(
-    "--base_model_name",
-    default="simple_hit",
-    help="The base model to use for the combination. Has to be a simple model",
-)
+@click.option("--base_model_type", default="hit", help="The base model type [hit, payment, combined]")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
 @click.option("--solver_name", default="CBC", help="Name of solver to use ['GUROBI', 'CBC', 'HIGHS']")
-def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file: bool, solver_name: str):
-    if "simple" not in base_model_name:
-        raise ValueError(f"Invalid model name, should be 'simple_*', but got {base_model_name}")
+def run_algorithm_combination(base_model_type: str, full_dataset: bool, to_file: bool, solver_name: str):
+    base_model_name = "simple_" + base_model_type
     base_model, df = parse_and_validate_runner_input(base_model_name, solver_name, full_dataset)
     config_df = pd.DataFrame.from_dict(
         {"base_model": base_model_name, "df_hash": get_hash(df), "solver_name": solver_name},
@@ -37,7 +32,7 @@ def run_algorithm_combination(base_model_name: str, full_dataset: bool, to_file:
     result = iterate_over_combinations(df, base_model, solver_name)
 
     result_df = pd.DataFrame.from_records(
-        result, columns=["algorithm_A", "algorithm_B", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
+        result, columns=["algorithms", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
     )
     result_df.sort_values(by="removed_false_positive_hits", axis=1, inplace=True, ascending=False)
     filename = f"results/{base_model_name}_{solver_name}_{get_hash(df)}.json"
@@ -59,7 +54,8 @@ def iterate_over_combinations(df: pd.DataFrame, base_model: Callable, solver_nam
             df = update_df(df, algorithms, weight)
 
             cutoffs = base_model(df, solver_name)
-
+            if any([c is None for c in cutoffs.values()]):
+                continue
             performance = analyze_performance(df, cutoffs)
             result.append(instance + merge_performance_and_cutoff_output(performance, cutoffs) + (cutoffs[string_rep],))
 
