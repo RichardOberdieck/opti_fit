@@ -12,13 +12,12 @@ from opti_fit.utils.runner_utils import (
 
 
 @click.command()
-@click.option("--model_name", default="simple_hit", help="The simple model to solve")
+@click.option("--model_type", default="hit", help="The model type [hit, payment, combined]")
 @click.option("--full_dataset", default=True, help="Whether to use the full dataset")
 @click.option("--to_file", default=True, help="Whether to write the result to file")
 @click.option("--solver_name", default="CBC", help="Name of solver to use ['GUROBI', 'CBC', 'HIGHS']")
-def run_simple_model(model_name: str, full_dataset: bool, to_file: bool, solver_name: str):
-    if "simple" not in model_name:
-        raise ValueError(f"Invalid model name, should be 'simple_*', but got {model_name}")
+def run_simple_model(model_type: str, full_dataset: bool, to_file: bool, solver_name: str):
+    model_name = "simple_" + model_type
     model, df = parse_and_validate_runner_input(model_name, solver_name, full_dataset)
 
     config_df = pd.DataFrame.from_dict(
