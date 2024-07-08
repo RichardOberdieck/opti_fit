@@ -45,8 +45,12 @@ hatch run simple --help
 
 
 ## Reproducibility
-This repository is designed to be complete, i.e. all results reported can be reproduced from the data provided. Each model starts with the `hatch` command needed to run the code. Note that this may be very time consuming and require 32GB or more of RAM, depending on the dataset that is being solved.
+To run all the analysis as it is reported here, you simply need to execute the `runs.sh` script.
 
-In addition, all the versions of packages used are pinned to make it easier to reproduce the results. However, this is not the case for [the CBC solver](https://github.com/coin-or/Cbc), which is downloaded by cloning the corresponding Github repository. This is an in-built design choice by the modeling framework `python-mip` that we used. 
+Note that this may be very time consuming and require 32GB or more of RAM, depending on the dataset that is being solved. In addition, as you will see in the [Solver Comparison](solver-comparisons.md) section, running the full dataset without Gurobi is virtually impossible.
+
+All the versions of packages used are pinned to make it easier to reproduce the results. However, this is not the case for [the CBC solver](https://github.com/coin-or/Cbc), which is downloaded by cloning the corresponding Github repository. This is an in-built design choice by the modeling framework `python-mip` that we used. 
 
 Also note that it was necessary to pin a specific commit of `python-mip` since at the time of this writing the latest release (1.15.0) did not support [the HiGHS solver](https://github.com/ERGO-Code/HiGHS), whereas the code was already available on the master branch.
+
+Finally, the data for all runs is stored in json files in the `results` folder of this repository. With it, you can recreate the configuration used for each run, as well as the performance and cutoffs achieved.

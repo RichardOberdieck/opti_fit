@@ -1,7 +1,9 @@
 # Algorithm Combination
 
 ```
-hatch run combination --model_name='simple_hit'
+hatch run combination --model_type='hit'
+hatch run combination --model_type='payment'
+hatch run combination --model_type='combined'
 ```
 
 Having investigated the results from running the [simple models](simple-model.md), we were curious whether it would be beneficial to combine the scores of two algorithms together in order to gain an additional degree of freedom that can be used to remove false positives. We chose the following approach:
@@ -14,7 +16,7 @@ s_{(A,B)} = wA + (1-w)B
 $$
 
 - For each combination `(A,B,w)`, calculate the resulting scores, add them to the dataset and run the simple model (either hit or payment). This results in a false positive removal percentage.
-- Return the best percentage, and write the results from all runs (3*15=45 in total) to an Excel file.
+- Return the best percentage, and write the results from all runs (5*15=75 in total) to a json file.
 
 ## Why only 2 algorithms?
 

@@ -10,7 +10,7 @@ A payment has one or more hits associated with it, and if at least one hit is a 
 ## Removing false positive hits
 
 ```
-hatch run simple --model='simple_hit'
+hatch run simple --model_type='hit'
 ```
 
 To identify the optimal cut-off values for removing false positive hits, we formulate the following mathematical optimization problem:
@@ -47,7 +47,7 @@ where:
 ## Removing false positive payments
 
 ```
-hatch run simple --model='simple_payment'
+hatch run simple --model_type='payment'
 ```
 
 To identify the optimal cut-off values for removing false positive payments, we formulate the following mathematical optimization problem:
@@ -87,7 +87,7 @@ where:
 ## Removing false positive payments while respecting true positive hits
 
 ```
-hatch run simple --model='simple_combined'
+hatch run simple --model_type='combined'
 ```
 
 To respecte the true positive nature of the hits, we simply have to add this constraint to the payment model:
