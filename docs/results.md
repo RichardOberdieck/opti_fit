@@ -24,3 +24,47 @@ The corresponding cutoffs are:
 !!! warning
 
     The payment-based model results in 66 true positive hits (1.64%) being missed.
+
+
+## Relaxed model
+
+The false positive hit reduction is quite significant, even when only a small slack is introduced:
+
+| Slack        | FP hit reduction [%]  | FP payment reduction [%] |
+|-------------:|----------------------:| -------------------------|
+|        0.999 |                 15.16 |                     9.66 |
+|         0.99 |                 25.56 |                    17.44 |
+|         0.98 |                 14.89 |                     9.70 |
+|         0.97 |                 14.89 |                     9.70 |
+|         0.96 |                 14.89 |                     9.70 |
+|         0.95 |                 14.89 |                     9.70 |
+
+Graphically, this looks as follows:
+
+```plotly
+{"file_path": "relaxed-hit-model-results.json"}
+```
+
+## Algorithm Combination
+
+For the algorithm combination, we tested out 75 different combinations: the 15 different combinations of algorithms with 5 different weights. The 5 most effective were:
+
+| Combination  | FP hit reduction [%]  | FP payment reduction [%] |
+|:-------------|----------------------:| -------------------------|
+|        0.999 |                 15.16 |                     9.66 |
+|         0.99 |                 25.56 |                    17.44 |
+|         0.98 |                 14.89 |                     9.70 |
+|         0.97 |                 14.89 |                     9.70 |
+|         0.96 |                 14.89 |                     9.70 |
+
+The impact of all tested combinations can be seen in the sorted histogram below:
+
+```plotly
+{"file_path": "combination-hit-model-full-results.json"}
+```
+
+It is also interesting to see how the weight impacts the effectiveness of the added algorithm as a function of the weight:
+
+```plotly
+{"file_path": "combination-hit-model-weight-graph-results.json"}
+```
