@@ -5,6 +5,8 @@ import plotly.express as px
 from plotly.io import to_json
 import json
 
+hash_value = "e1c2a078d4abcdf595e7723689d4213d6a8c24dc"
+
 
 def generate_hit_images():
     df = read_dataset("data/full_dataset.csv.gz", validate=False)
@@ -46,15 +48,13 @@ def generate_hit_images():
 
 
 def generate_relaxed_solution_image():
-    with open(
-        "results/relaxed_hit_GUROBI_[0.95, 0.96, 0.97, 0.98, 0.99, 0.999]_e1c2a078d4abcdf595e7723689d4213d6a8c24dc.json"
-    ) as file:
+    with open(f"results/relaxed_hit_GUROBI_[0.95, 0.96, 0.97, 0.98, 0.99, 0.999]_{hash_value}.json") as file:
         data = json.load(file)
 
     results = pd.DataFrame.from_dict(data[1], orient="index")  # The first entry is the configuration
     results["slack"] = 1 - results["slack"]
 
-    with open("results/simple_hit_GUROBI_e1c2a078d4abcdf595e7723689d4213d6a8c24dc.json") as file:
+    with open(f"results/simple_hit_GUROBI_{hash_value}.json") as file:
         data = json.load(file)
 
     simple_results = pd.DataFrame.from_dict(data[1], orient="index")  # The first entry is the configuration
