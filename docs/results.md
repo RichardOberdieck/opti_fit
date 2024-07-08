@@ -45,17 +45,24 @@ Graphically, this looks as follows:
 {"file_path": "relaxed-hit-model-results.json"}
 ```
 
+From this, we can also construct a Pareto curve:
+
+```plotly
+{"file_path": "relaxed-hit-model-pareto.json"}
+```
+
 ## Algorithm Combination
 
 For the algorithm combination, we tested out 75 different combinations: the 15 different combinations of algorithms with 5 different weights. The 5 most effective were:
 
 | Combination  | FP hit reduction [%]  | FP payment reduction [%] |
 |:-------------|----------------------:| -------------------------|
-|        0.999 |                 15.16 |                     9.66 |
-|         0.99 |                 25.56 |                    17.44 |
-|         0.98 |                 14.89 |                     9.70 |
-|         0.97 |                 14.89 |                     9.70 |
-|         0.96 |                 14.89 |                     9.70 |
+|        0.999 |                 19.23 |                    13.26 |
+|         0.99 |                 23.76 |                    16.73 |
+|         0.98 |                 31.29 |                    24.87 |
+|         0.97 |                 35.81 |                    27.33 |
+|         0.96 |                 38.18 |                    29.69 |
+|         0.95 |                 40.68 |                    32.15 |
 
 The impact of all tested combinations can be seen in the sorted histogram below:
 

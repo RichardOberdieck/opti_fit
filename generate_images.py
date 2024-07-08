@@ -3,6 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 import plotly.express as px
 from plotly.io import to_json
+import json
 
 
 def generate_hit_images():
@@ -45,4 +46,70 @@ def generate_hit_images():
 
 
 def generate_relaxed_solution_image():
-    _ = pd.read_json("results/")
+    with open(
+        "results/relaxed_hit_GUROBI_[0.95, 0.96, 0.97, 0.98, 0.99, 0.999]_e1c2a078d4abcdf595e7723689d4213d6a8c24dc.json"
+    ) as file:
+        data = json.load(file)
+
+    results = pd.DataFrame.from_dict(data[1], orient="index")  # The first entry is the configuration
+    results["slack"] = 1 - results["slack"]
+
+    with open("results/simple_hit_GUROBI_e1c2a078d4abcdf595e7723689d4213d6a8c24dc.json") as file:
+        data = json.load(file)
+
+    simple_results = pd.DataFrame.from_dict(data[1], orient="index")  # The first entry is the configuration
+    simple_results["slack"] = 0
+    results = pd.concat([results, simple_results])
+
+    false_removed = pd.concat(
+        [results["removed_false_positive_hits_percent"], results["removed_false_positive_payments_percent"]]
+    )
+    false_removed.rename("False positives removed [%]", inplace=True)
+    false_removed = false_removed.reset_index()
+
+    true_removed = pd.concat(
+        [results["removed_true_positive_hits_percent"], results["removed_true_positive_payments_percent"]]
+    )
+    true_removed.rename("True positives removed [%]", inplace=True)
+    true_removed = true_removed.reset_index()
+
+    slacks = pd.concat([results["slack"], results["slack"]])
+    slacks = slacks.reset_index()
+
+    types = pd.concat([pd.Series(["Hit"] * len(results["slack"])), pd.Series(["Payment"] * len(results["slack"]))])
+    types.rename("Type", inplace=True)
+    types = types.reset_index()
+
+    df = pd.concat(
+        [
+            slacks["slack"],
+            false_removed["False positives removed [%]"],
+            true_removed["True positives removed [%]"],
+            types["Type"],
+        ],
+        axis=1,
+    )
+
+    fig = px.line(
+        df,
+        x="slack",
+        y="False positives removed [%]",
+        color="Type",
+        title="False positives removed when introducing slack",
+        markers=True,
+    )
+    fig.update_layout(xaxis_range=[0, 0.05], yaxis_range=[0, 45])
+    with open("docs/relaxed-hit-model-results.json", "w") as file:
+        file.write(to_json(fig))
+
+    fig = px.line(
+        df,
+        y="False positives removed [%]",
+        x="True positives removed [%]",
+        color="Type",
+        title="Pareto curve for introducing slack ",
+        markers=True,
+    )
+    fig.show()
+    with open("docs/relaxed-hit-model-pareto.json", "w") as file:
+        file.write(to_json(fig))
