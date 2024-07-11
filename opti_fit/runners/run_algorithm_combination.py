@@ -23,6 +23,7 @@ from opti_fit.utils.runner_utils import (
 def run_algorithm_combination(base_model_type: str, full_dataset: bool, to_file: bool, solver_name: str):
     base_model_name = "simple_" + base_model_type
     base_model, df = parse_and_validate_runner_input(base_model_name, solver_name, full_dataset)
+    df_hash = get_hash(df)
     config_df = pd.DataFrame.from_dict(
         {"base_model": base_model_name, "df_hash": get_hash(df), "solver_name": solver_name},
         orient="index",
@@ -34,7 +35,7 @@ def run_algorithm_combination(base_model_type: str, full_dataset: bool, to_file:
     result_df = pd.DataFrame.from_records(
         result, columns=["algorithms", "weight"] + PERFORMANCE_CUTOFF_COLUMNS + ["new_cutoff"]
     )
-    filename = f"results/{base_model_name}_{solver_name}_{get_hash(df)}.json"
+    filename = f"results/combination_{base_model_name}_{solver_name}_{df_hash}.json"
     print_and_write_results(config_df, result_df, to_file, filename)
 
 
