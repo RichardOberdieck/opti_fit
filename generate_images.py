@@ -1,4 +1,5 @@
-from opti_fit.dataset_utils import read_dataset
+from opti_fit.utils.dataset_utils import ALGORITHMS, read_dataset
+from opti_fit.utils.runner_utils import read_result
 import pandas as pd
 from tqdm import tqdm
 import plotly.express as px
@@ -113,3 +114,39 @@ def generate_relaxed_solution_image():
     fig.show()
     with open("docs/relaxed-hit-model-pareto.json", "w") as file:
         file.write(to_json(fig))
+
+
+def generate_simple_model_results():
+    data = {
+        key: read_result(f"results/simple_{key}_GUROBI_{hash_value}.json")[1] for key in ["hit", "payment", "combined"]
+    }
+    result = [
+        (
+            key,
+            round(df["removed_false_positive_hits_percent"].values[0], 2),
+            round(df["removed_false_positive_payments_percent"].values[0], 2),
+        )
+        for key, df in data.items()
+    ]
+
+    df = pd.DataFrame.from_records(
+        data=result, columns=["Model", "False positive hit reduction [%]", "False positive payment reduction [%]"]
+    )
+    df.to_json("docs/simple_model_results.json")
+
+    algorithm_headers = [f"cutoff_{a}" for a in ALGORITHMS]
+
+    cutoffs = pd.concat(
+        [
+            ALGORITHMS,
+            data["hit"][algorithm_headers],
+            data["payment"][algorithm_headers],
+            data["combined"][algorithm_headers],
+        ],
+        axis=1,
+    )
+    cutoffs.to_json("docs/simple_model_cutoffs.json")
+
+
+if __name__ == "__main__":
+    generate_simple_model_results()

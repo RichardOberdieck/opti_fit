@@ -65,3 +65,13 @@ def print_and_write_results(config_df: pd.DataFrame, result_df: pd.DataFrame, to
         with open(filename, "w") as file:
             json.dump([config_df.to_dict(orient="index"), result_df.to_dict(orient="index")], file)
         print(f"Written to {filename}")
+
+
+def read_result(filepath: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    with open(filepath) as file:
+        data = json.load(file)
+
+    config_df = pd.DataFrame.from_dict(data[0], orient="index")  # The first entry is the configuration
+    result_df = pd.DataFrame.from_dict(data[1], orient="index")  # The second entry is the result
+
+    return config_df, result_df

@@ -38,6 +38,7 @@ plugins:
   - search
   - mkdocstrings
   - plotly
+  - table-reader
 
 markdown_extensions:
   - admonition

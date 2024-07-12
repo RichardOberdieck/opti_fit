@@ -4,11 +4,7 @@
 
 The solution of the simple models already results in a significant reduction of false positives:
 
-| Model        | FP hit reduction [%]  | FP payment reduction [%] |
-| ------------ | --------------------- | -------------------------|
-| Hit          |                 15.16 |                     9.66 |
-| Payment      |                 25.56 |                    17.44 |
-| Combined     |                 14.89 |                     9.70 |
+{{ read_json('simple_model_results.json') }}
 
 The corresponding cutoffs are:
 
@@ -75,3 +71,13 @@ It is also interesting to see how the weight impacts the effectiveness of the ad
 ```plotly
 {"file_path": "combination-hit-model-weight-graph-results.json"}
 ```
+
+## Some comments
+
+- The results were achieved by running the `runs.sh` script in this repository. The graphs were created with the `generate_images.py` file.
+- As we needed to run a lot of experiments, we looked into improving the Gurobi runime. We found that providing a MIP start helped, and so we provided the solution of the simple hit model to all runs as a start solution. We also used the following parameters for our runs:
+    - [Presolve](https://www.gurobi.com/documentation/current/refman/presolve.html) = 1: This reduces the default amount of presolve to an extent, as we noticed that it would stall after a certain period. However, presolve is necessary as removig it completely resulted in significantly worse runtimes.
+    - [Method](https://www.gurobi.com/documentation/current/refman/method.html) = 2: We found that the barrier method plus crossover was the most effective method and hence we used it rather than the default concurrent solver.
+    - [Threads](https://www.gurobi.com/documentation/current/refman/threads.html) = 8: We had a machine with 16 threads (8 physical cores) and 32GB of RAM available for our experiments. Unfortunately, we did run out of memory on several occasions and so we found it to be more stable if we limited the number of threads to 8, rather than the default 16.
+
+    

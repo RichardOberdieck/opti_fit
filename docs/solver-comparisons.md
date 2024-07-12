@@ -19,6 +19,10 @@ In order to make the results as robust as possible, we considered the following:
 - Use a single simple model
 - Use 5 different random seeds
 
+!!! note
+
+    We did set some Gurobi parameters (see [Results](results.md) section), however they only had a modest impact on the overall runtime. Nonetheless, we removed those parameters for this comparison in order to be as fair as possible.
+
 ## Results
 
 Gurobi is order of magnitudes more performant and efficient than HiGHS and CBC. 

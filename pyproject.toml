@@ -60,7 +60,9 @@ docs = [
   "mkdocs", 
   "mkdocs-material",
   "mkdocstrings[python]",
-  "mkdocs-plotly-plugin"
+  "mkdocs-plotly-plugin",
+  "mkdocs-table-reader-plugin",
+  "plotly"
 ]
 
 [tool.hatch.envs.default]
