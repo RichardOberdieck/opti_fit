@@ -3,56 +3,35 @@ import os
 import pandas as pd
 from opti_fit.models.models import get_model
 from opti_fit.utils.dataset_utils import read_dataset
+from opti_fit.utils.model_utils import PERFORMANCE_COLUMNS
 
 
 def parse_and_validate_runner_input(
-    model_name: str = "simple_hit", solver_name: str = "CBC", full_dataset: bool = True
+    model_name: str = "simple_hit", solver_name: str = "CBC", dataset: str = "full_dataset.csv.gz"
 ):
     model = get_model(model_name)
     if solver_name not in ["GUROBI", "GRB", "CBC", "HIGHS"]:
         raise ValueError(f"Invalid solver name, got {solver_name}")
 
-    filename = "full_dataset.csv.gz" if full_dataset else "small_dataset.csv.gz"
-    df = read_dataset(os.path.join("data", filename))
+    df = read_dataset(os.path.join("data", dataset))
 
     return model, df
 
 
-PERFORMANCE_CUTOFF_COLUMNS = [
-    "removed_false_positive_hits_absolute",
-    "removed_false_positive_hits_percent",
-    "removed_true_positive_hits_absolute",
-    "removed_true_positive_hits_percent",
-    "removed_false_positive_payments_absolute",
-    "removed_false_positive_payments_percent",
-    "removed_true_positive_payments_absolute",
-    "removed_true_positive_payments_percent",
-    "cutoff_regex_match",
-    "cutoff_jaro_winkler",
-    "cutoff_fuzz_ratio",
-    "cutoff_fuzz_partial_ratio",
-    "cutoff_fuzz_token_sort_ratio",
-    "cutoff_fuzz_partial_token_sort_ratio",
-]
+def merge_performance_and_cutoff_output(performance_df: pd.DataFrame, cutoffs: dict[str, float]) -> tuple[tuple, list]:
+    result = ()
+    column_names = []
+    for element in ["hits", "payments"]:
+        for column in PERFORMANCE_COLUMNS:
+            if column.startswith("removed_"):
+                result += (float(performance_df.loc[element, column]),)
+                column_names.append(column + "_" + element)
 
+    for algorithm, cutoff in cutoffs.items():
+        result += (cutoff,)
+        column_names.append(f"cutoff_{algorithm}")
 
-def merge_performance_and_cutoff_output(performance_df: pd.DataFrame, cutoffs: dict[str, float]) -> tuple:
-    return (
-        performance_df.loc["Hits", "Removed False Positive [absolute]"],
-        performance_df.loc["Hits", "Removed False Positive [%]"],
-        performance_df.loc["Hits", "Removed True Positive [absolute]"],
-        performance_df.loc["Hits", "Removed True Positive [%]"],
-        performance_df.loc["Payment", "Removed False Positive [absolute]"],
-        performance_df.loc["Payment", "Removed False Positive [%]"],
-        performance_df.loc["Payment", "Removed True Positive [absolute]"],
-        performance_df.loc["Payment", "Removed True Positive [%]"],
-        cutoffs["regex_match"],
-        cutoffs["jaro_winkler"],
-        cutoffs["fuzz_ratio"],
-        cutoffs["fuzz_partial_ratio"],
-        cutoffs["fuzz_token_sort_ratio"],
-        cutoffs["fuzz_partial_token_sort_ratio"],
-    )
+    return result, column_names
 
 
 def print_and_write_results(config_df: pd.DataFrame, result_df: pd.DataFrame, to_file: bool, filename: str):

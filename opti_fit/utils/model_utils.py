@@ -1,18 +1,18 @@
 import pandas as pd
 
-from opti_fit.utils.dataset_utils import ALGORITHMS
+from opti_fit.utils.dataset_utils import get_algorithms_from_df
 
 
 TIMELIMIT = 10800  # In seconds
 DEFAULT_SEED = 0
 PERFORMANCE_COLUMNS = [
-    "Type",
-    "Total",
-    "Total True Positive",
-    "Removed False Positive [absolute]",
-    "Removed False Positive [%]",
-    "Removed True Positive [absolute]",
-    "Removed True Positive [%]",
+    "element",
+    "total",
+    "total_true_positive",
+    "removed_false_positive_absolute",
+    "removed_false_positive_percent",
+    "removed_true_positive_absolute",
+    "removed_true_positive_percent",
 ]
 
 
@@ -20,8 +20,9 @@ def check_hit_solution(df: pd.DataFrame, cutoffs, validate: bool = False) -> tup
     n_hits = 0
     true_positives_removed = 0
     n_true_positives = 0
+    algorithms = get_algorithms_from_df(df)
     for _, row in df.iterrows():
-        is_still_hit = any([row[a] >= cutoffs[a] for a in ALGORITHMS])
+        is_still_hit = any([row[a] >= cutoffs[a] for a in algorithms])
         n_hits += is_still_hit
         if row["is_hit_true_hit"]:
             n_true_positives += 1
@@ -39,10 +40,11 @@ def check_payment_solution(df: pd.DataFrame, cutoffs, validate: bool = False) ->
     n_payment_hits = 0
     true_positives_removed = 0
     n_true_positives = 0
+    algorithms = get_algorithms_from_df(df)
     for payment_id in payment_ids:
         hit_df = payment_df.loc[payment_id]
         is_payment_still_hit = any(
-            [any([df.loc[hit_id, a] >= cutoffs[a] for a in ALGORITHMS]) for hit_id in hit_df.index]
+            [any([df.loc[hit_id, a] >= cutoffs[a] for a in algorithms]) for hit_id in hit_df.index]
         )
         n_payment_hits += is_payment_still_hit
 
@@ -64,7 +66,7 @@ def analyze_performance(df: pd.DataFrame, cutoffs) -> pd.DataFrame:
 
     data = [
         (
-            "Payment",
+            "payments",
             n_payments,
             n_true_positives_payments,
             n_payments - n_payment_hits,
@@ -73,7 +75,7 @@ def analyze_performance(df: pd.DataFrame, cutoffs) -> pd.DataFrame:
             100 * true_positive_payments_removed / n_true_positives_payments,
         ),
         (
-            "Hits",
+            "hits",
             len(df),
             n_true_positives_hits,
             len(df) - n_hits,
@@ -86,5 +88,5 @@ def analyze_performance(df: pd.DataFrame, cutoffs) -> pd.DataFrame:
     return pd.DataFrame.from_records(
         data,
         columns=PERFORMANCE_COLUMNS,
-        index="Type",
+        index="element",
     )

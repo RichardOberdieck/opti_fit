@@ -1,7 +1,7 @@
 import pandas as pd
 from mip import Model, xsum, minimize, BINARY
 
-from opti_fit.utils.dataset_utils import ALGORITHMS
+from opti_fit.utils.dataset_utils import get_algorithms_from_df
 from opti_fit.models.simple_model import define_cutoff_constraints, define_hit_variables, solve
 from opti_fit.utils.model_utils import DEFAULT_SEED
 
@@ -17,9 +17,10 @@ def solve_relaxed_hit_model(df: pd.DataFrame, solver_name: str = "CBC", slack: f
     Returns:
         The optimal cutoffs
     """
+    algorithms = get_algorithms_from_df(df)
     model = Model(solver_name=solver_name)
 
-    x, y, z = define_hit_variables(model, df, ALGORITHMS)
+    x, y, z = define_hit_variables(model, df, algorithms)
 
     # Add constraints
     objective = []
@@ -30,7 +31,7 @@ def solve_relaxed_hit_model(df: pd.DataFrame, solver_name: str = "CBC", slack: f
         else:
             objective.append(z[hit_id])
 
-        model = define_cutoff_constraints(model, scores, x, y, z, ALGORITHMS, hit_id)
+        model = define_cutoff_constraints(model, scores, x, y, z, algorithms, hit_id)
 
     # Add true positive relaxed constraint
     model += xsum(true_positive_constraint) >= slack * len(true_positive_constraint)
@@ -57,11 +58,12 @@ def solve_relaxed_payment_model(df: pd.DataFrame, solver_name: str = "CBC", slac
         lambda row: row
     )
     payment_ids = df["payment_case_id"].unique()
+    algorithms = get_algorithms_from_df(df)
 
     model = Model(solver_name=solver_name)
 
     # Add the variables
-    x, y, z = define_hit_variables(model, df, ALGORITHMS)
+    x, y, z = define_hit_variables(model, df, algorithms)
     alpha = {payment_id: model.add_var(f"alpha_{payment_id}", var_type=BINARY) for payment_id in payment_ids}
 
     # Add constraints
@@ -79,7 +81,7 @@ def solve_relaxed_payment_model(df: pd.DataFrame, solver_name: str = "CBC", slac
         for hit_id in hit_df.index:
             model += z[hit_id] <= alpha[payment_id]
 
-            model = define_cutoff_constraints(model, df.loc[hit_id], x, y, z, ALGORITHMS, hit_id)
+            model = define_cutoff_constraints(model, df.loc[hit_id], x, y, z, algorithms, hit_id)
 
     model += xsum(true_positive_constraint) >= slack * len(true_positive_constraint)
     model.objective = minimize(xsum(objective))

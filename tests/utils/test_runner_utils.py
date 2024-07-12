@@ -17,9 +17,9 @@ from pytest import mark, raises
 def test_parse_and_validate_runner_input_exception(model_name, solver_name, raises_exception):
     if raises_exception:
         with raises(ValueError):
-            parse_and_validate_runner_input(model_name, solver_name, False)
+            parse_and_validate_runner_input(model_name, solver_name, "small_dataset.csv.gz")
     else:
-        parse_and_validate_runner_input(model_name, solver_name, False)
+        parse_and_validate_runner_input(model_name, solver_name, "small_dataset.csv.gz")
 
 
 @mark.parametrize(
@@ -34,7 +34,7 @@ def test_parse_and_validate_runner_input_exception(model_name, solver_name, rais
 )
 def test_parse_and_validate_runner_input_model(model_name, expected_model):
     # Act
-    model, _ = parse_and_validate_runner_input(model_name, full_dataset=False)
+    model, _ = parse_and_validate_runner_input(model_name, full_dataset="small_dataset.csv.gz")
 
     # Assert
     assert expected_model == model
